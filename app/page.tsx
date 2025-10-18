@@ -27,7 +27,7 @@ export default function HomePage() {
             </Link>
           </nav>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" asChild>
+            <Button asChild>
               <Link href="/login">Log in</Link>
             </Button>
             <Button asChild>
@@ -41,7 +41,7 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-20 md:py-32">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-balance">
-            Learning made{" "}
+            <span className="text-muted-foreground">Learning made</span>{" "}
             <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               intelligent
             </span>
