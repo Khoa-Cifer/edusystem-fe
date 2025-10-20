@@ -345,12 +345,6 @@ export default function SignupPage() {
                   Teacher
                 </Label>
               </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="admin" id="admin" />
-                <Label htmlFor="admin" className="font-normal cursor-pointer">
-                  Administrator
-                </Label>
-              </div>
             </RadioGroup>
           </div>
 
