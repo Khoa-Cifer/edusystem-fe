@@ -21,5 +21,4 @@ export interface UserRegistrationFormData {
   address: string;
   gender: string;
   birthDate: string;
-  role: string;
 }

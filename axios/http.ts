@@ -42,7 +42,14 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (
-      originalRequest.url.includes("/auth/sign-in") ||
+      originalRequest.url.includes("/auth/students-register") ||
+      originalRequest.url.includes("/auth/refresh-token") ||
+      originalRequest.url.includes("/auth/email/verification/send") ||
+      originalRequest.url.includes("/auth/email/verification/confirm") ||
+      originalRequest.url.includes("/auth/password/forgot") ||
+      originalRequest.url.includes("/auth/password/reset") ||
+      originalRequest.url.includes("/auth/password/otp") ||
+      originalRequest.url.includes("/auth/password/change") ||
       originalRequest.url.includes("/auth/refresh-token")
     ) {
       return Promise.reject(error);

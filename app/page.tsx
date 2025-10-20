@@ -54,9 +54,6 @@ export default function HomePage() {
             <Button size="lg" asChild className="text-base">
               <Link href="/signup">Get started free</Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="text-base bg-transparent">
-              <Link href="/demo">View demo</Link>
-            </Button>
           </div>
         </div>
       </section>

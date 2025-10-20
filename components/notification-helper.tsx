@@ -1,7 +1,7 @@
 "use client"
 
 import { CheckCircle, AlertCircle, AlertTriangle } from "lucide-react"
-import { toast } from "@/hooks/use-toast"
+import { toast } from "./ui/use-toast"
 
 export const showNotification = {
   success: (title: string, description?: string) => {

@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { BookOpen, CheckCircle, Mail, ArrowRight } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
+import { showNotification } from "@/components/notification-helper";
 
 export default function SignupPage() {
   const { register } = useAuth();
@@ -24,7 +24,6 @@ export default function SignupPage() {
     address: "",
     gender: "",
     birthDate: "",
-    role: "student",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -40,8 +39,12 @@ export default function SignupPage() {
     }
   };
 
-  const handleRoleChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, role: value }));
+  const handleVerifyEmail = async () => {
+    if (!formData.email) {
+      showNotification.error("Error", "Email not found");
+      return;
+    }
+  
   };
 
   const validateForm = () => {
@@ -108,12 +111,6 @@ export default function SignupPage() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                Role
-              </p>
-              <p className="text-sm font-medium capitalize">{formData.role}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">
                 Phone
               </p>
               <p className="text-sm font-medium">{formData.phoneNumber}</p>
@@ -136,12 +133,10 @@ export default function SignupPage() {
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            <Link href="/verify-email" className="block">
-              <Button className="w-full" size="lg">
-                Go to Email Verification
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
+            <Button onClick={handleVerifyEmail} className="w-full" size="lg">
+              Verify Email
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
             <Link href="/login" className="block">
               <Button
                 variant="outline"
@@ -206,7 +201,7 @@ export default function SignupPage() {
                   id="phoneNumber"
                   name="phoneNumber"
                   type="tel"
-                  placeholder="+1 (555) 000-0000"
+                  placeholder="+84 (555) 000-000"
                   value={formData.phoneNumber}
                   onChange={handleChange}
                   className="bg-background"
@@ -323,29 +318,6 @@ export default function SignupPage() {
                 )}
               </div>
             </div>
-          </div>
-
-          {/* Role Selection Section */}
-          <div className="space-y-3">
-            <Label>I am a *</Label>
-            <RadioGroup
-              value={formData.role}
-              onValueChange={handleRoleChange}
-              className="space-y-2"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="student" id="student" />
-                <Label htmlFor="student" className="font-normal cursor-pointer">
-                  Student
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="teacher" id="teacher" />
-                <Label htmlFor="teacher" className="font-normal cursor-pointer">
-                  Teacher
-                </Label>
-              </div>
-            </RadioGroup>
           </div>
 
           <Button onClick={handleSubmit} className="w-full" size="lg">

@@ -42,8 +42,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setAccessTokenState(token);
       const user = jwtDecode<UserClaims>(token);
       setCurrentUserClaims(user);
+      fetchUserInfo();
     }
-    fetchUserInfo();
   }, [accessTokenState]);
 
   const login = async (email: string, password: string) => {
@@ -76,16 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     data: UserRegistrationFormData
   ): Promise<ResponseDto<any>> => {
     try {
-      let url = null;
-      if (data.role == "student") {
-        url = "/auth/students-register";
-      } else if (data.role == "teacher") {
-        url = "/auth/teacher-register";
-      } else {
-        console.error("Invalid role");
-        throw "Invalid role";
-      }
-      const response = await http.post(url, {
+      const response = await http.post("/auth/students-register", {
         email: data.email,
         password: data.password,
         confirmPassword: data.confirmPassword,
@@ -95,13 +86,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         gender: data.gender,
         birthDate: convertDateString(data.birthDate),
       });
-      const { accessToken } = response.data.result.accessToken;
-      localStorage.setItem("accessToken", accessToken);
-      setAccessTokenState(accessToken);
       return response.data;
     } catch (error) {
       console.error("Register failed:", error);
-      showNotification.error("Registration Failed", "Please try again");
+      const e: any = error;
+      const message = e.response.data.message || "Please try again";
+      showNotification.error("Registration Failed", message);
       throw error;
     }
   };
