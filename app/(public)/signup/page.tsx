@@ -13,7 +13,7 @@ import { useAuth } from "@/context/auth-context";
 import { showNotification } from "@/components/notification-helper";
 
 export default function SignupPage() {
-  const { register } = useAuth();
+  const { register, sendVerificationEmail } = useAuth();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -39,12 +39,13 @@ export default function SignupPage() {
     }
   };
 
-  const handleVerifyEmail = async () => {
+  const handleSendEmail = async () => {
     if (!formData.email) {
       showNotification.error("Error", "Email not found");
       return;
     }
-  
+
+    await sendVerificationEmail(formData.email);
   };
 
   const validateForm = () => {
@@ -133,8 +134,8 @@ export default function SignupPage() {
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            <Button onClick={handleVerifyEmail} className="w-full" size="lg">
-              Verify Email
+            <Button onClick={handleSendEmail} className="w-full" size="lg">
+              Send Email to {formData.email}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
             <Link href="/login" className="block">

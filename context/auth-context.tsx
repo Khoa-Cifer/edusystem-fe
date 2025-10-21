@@ -14,6 +14,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<any>;
   register: (data: UserRegistrationFormData) => Promise<any>;
   logout: () => Promise<void>;
+  sendVerificationEmail: (email: string) => Promise<any>;
   authenticatedUser: UserProfile | null;
   userClaims: UserClaims | null;
   accessToken: string | null;
@@ -96,12 +97,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const sendVerificationEmail = async (
+    email: string
+  ): Promise<ResponseDto<any>> => {
+    try {
+      const response = await http.post("/auth/email/verification/send", {
+        email: email,
+      });
+      showNotification.success("Verification Sent successfully", response.data.message);
+      return response.data;
+    } catch (error) {
+      console.error("Verification failed:", error);
+      const e: any = error;
+      const message = e.response.data.message || "Please try again";
+      showNotification.error("Verification Failed", message);
+      throw error;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
         login,
         logout,
         register,
+        sendVerificationEmail,
         userClaims: currentUserClaims,
         accessToken: accessTokenState,
         authenticatedUser: currentUserProfile,
