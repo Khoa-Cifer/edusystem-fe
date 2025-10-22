@@ -9,13 +9,15 @@ import { BookOpen } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useState } from "react";
 import { showNotification } from "@/components/notification-helper";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const router = useRouter();
+
   const handleLogin = async () => {
     if (!email || !password) {
       showNotification.warning(
@@ -28,6 +30,9 @@ export default function LoginPage() {
     try {
       const response = await login(email, password);
       console.log(response);
+      if (response.isSuccess) {
+        router.push("/");
+      }
     } catch (err) {
       console.error("Login failed:", err);
     } finally {

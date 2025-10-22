@@ -11,9 +11,9 @@ import { ResponseDto } from "@/interfaces/response-dto";
 import { showNotification } from "@/components/notification-helper";
 
 interface AuthContextType {
-  login: (email: string, password: string) => Promise<any>;
+  login: (email: string, password: string) => Promise<ResponseDto<any>>;
   register: (data: UserRegistrationFormData) => Promise<ResponseDto<any>>;
-  logout: () => Promise<void>;
+  logout: () => Promise<boolean>;
   sendVerificationEmail: (email: string) => Promise<ResponseDto<any>>;
   confirmVerificationEmail: (
     userId: string,
@@ -51,16 +51,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [accessTokenState]);
 
-  const login = async (email: string, password: string) => {
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<ResponseDto<any>> => {
     try {
       const response = await http.post("/auth/sign-in", {
         email: email,
         password: password,
       });
-      const { accessToken } = response.data.result.accessToken;
+      const { accessToken } = response.data.result;
       localStorage.setItem("accessToken", accessToken);
       setAccessTokenState(accessToken);
-      window.location.href = "/";
+      return response.data;
     } catch (error) {
       console.error("Login failed:", error);
       const e: any = error;
@@ -74,9 +77,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       localStorage.removeItem("accessToken");
       setAccessTokenState(null);
-      window.location.href = "/";
+      return true;
     } catch (error) {
       console.error("Logout failed:", error);
+      throw error;
     }
   };
 
