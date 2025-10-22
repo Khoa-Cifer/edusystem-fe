@@ -57,7 +57,7 @@ export function ReviewSession() {
             </svg>
           </div>
           <h2 className="text-3xl font-bold mb-4">Session Complete!</h2>
-          <p className="text-muted-foreground text-lg mb-8">Great job! You've reviewed {totalCards} cards today.</p>
+          <p className="text-muted-foreground text-lg mb-8">Great job! You&apos;ve reviewed {totalCards} cards today.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild>
               <Link href="/review">Back to Review</Link>

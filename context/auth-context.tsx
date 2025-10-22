@@ -12,9 +12,13 @@ import { showNotification } from "@/components/notification-helper";
 
 interface AuthContextType {
   login: (email: string, password: string) => Promise<any>;
-  register: (data: UserRegistrationFormData) => Promise<any>;
+  register: (data: UserRegistrationFormData) => Promise<ResponseDto<any>>;
   logout: () => Promise<void>;
-  sendVerificationEmail: (email: string) => Promise<any>;
+  sendVerificationEmail: (email: string) => Promise<ResponseDto<any>>;
+  confirmVerificationEmail: (
+    userId: string,
+    token: string
+  ) => Promise<ResponseDto<any>>;
   authenticatedUser: UserProfile | null;
   userClaims: UserClaims | null;
   accessToken: string | null;
@@ -59,6 +63,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       window.location.href = "/";
     } catch (error) {
       console.error("Login failed:", error);
+      const e: any = error;
+      const message = e.response.data.message || "Please try again";
+      showNotification.error("Login Failed", message);
       throw error;
     }
   };
@@ -104,7 +111,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const response = await http.post("/auth/email/verification/send", {
         email: email,
       });
-      showNotification.success("Verification Sent successfully", response.data.message);
+      showNotification.success(
+        "Verification Sent successfully",
+        response.data.message
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Verification failed:", error);
+      const e: any = error;
+      const message = e.response.data.message || "Please try again";
+      showNotification.error("Verification Failed", message);
+      throw error;
+    }
+  };
+
+  const confirmVerificationEmail = async (
+    userId: string,
+    token: string
+  ): Promise<ResponseDto<any>> => {
+    try {
+      const response = await http.post("/auth/email/verification/confirm", {
+        userId: userId,
+        token: token,
+      });
       return response.data;
     } catch (error) {
       console.error("Verification failed:", error);
@@ -122,6 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         logout,
         register,
         sendVerificationEmail,
+        confirmVerificationEmail,
         userClaims: currentUserClaims,
         accessToken: accessTokenState,
         authenticatedUser: currentUserProfile,

@@ -1,11 +1,40 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { BookOpen } from "lucide-react"
+"use client";
+
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { BookOpen } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
+import { useState } from "react";
+import { showNotification } from "@/components/notification-helper";
 
 export default function LoginPage() {
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const handleLogin = async () => {
+    if (!email || !password) {
+      showNotification.warning(
+        "Email or password not found",
+        "Please input email and password"
+      );
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const response = await login(email, password);
+      console.log(response);
+    } catch (err) {
+      console.error("Login failed:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background dark flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8 bg-card border-border">
@@ -14,37 +43,67 @@ export default function LoginPage() {
             <BookOpen className="w-7 h-7 text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-bold">Welcome back</h1>
-          <p className="text-muted-foreground text-sm mt-1">Sign in to your account</p>
+          <p className="text-muted-foreground text-sm mt-1">
+            Sign in to your account
+          </p>
         </div>
 
-        <form className="space-y-4">
+        <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@example.com" className="bg-background" />
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              className="bg-background"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link href="/forgot-password" className="text-xs text-primary hover:underline">
+              <Link
+                href="/forgot-password"
+                className="text-xs text-primary hover:underline"
+              >
                 Forgot password?
               </Link>
             </div>
-            <Input id="password" type="password" placeholder="••••••••" className="bg-background" />
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              className="bg-background"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
-          <Button className="w-full" size="lg">
-            Sign in
+          <Button
+            type="button"
+            onClick={handleLogin}
+            className="w-full"
+            size="lg"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Signing in..." : "Sign in"}
           </Button>
-        </form>
+        </div>
 
         <div className="mt-6 text-center text-sm">
-          <span className="text-muted-foreground">Don't have an account? </span>
-          <Link href="/signup" className="text-primary hover:underline font-medium">
+          <span className="text-muted-foreground">
+            Don&apos;t have an account?{" "}
+          </span>
+          <Link
+            href="/signup"
+            className="text-primary hover:underline font-medium"
+          >
             Sign up
           </Link>
         </div>
       </Card>
     </div>
-  )
+  );
 }

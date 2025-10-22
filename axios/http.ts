@@ -43,6 +43,7 @@ api.interceptors.response.use(
 
     if (
       originalRequest.url.includes("/auth/students-register") ||
+      originalRequest.url.includes("/auth/sign-in") ||
       originalRequest.url.includes("/auth/refresh-token") ||
       originalRequest.url.includes("/auth/email/verification/send") ||
       originalRequest.url.includes("/auth/email/verification/confirm") ||

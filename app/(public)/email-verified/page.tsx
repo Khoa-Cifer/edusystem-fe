@@ -1,18 +1,50 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
+import { showNotification } from "@/components/notification-helper";
+import { useEffect } from "react";
+import { useAuth } from "@/context/auth-context";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("userId");
+  const token = searchParams.get("token");
+  const { confirmVerificationEmail } = useAuth();
+
+  useEffect(() => {
+    if (!userId || !token) {
+      showNotification.error(
+        "Invalid verification link",
+        "Missing user or token in the verification link."
+      );
+      router.push("/");
+      return;
+    }
+
+    const verifyEmail = async () => {
+      try {
+        await confirmVerificationEmail(userId, token);
+      } catch (error) {
+        console.error("Verification error:", error);
+        showNotification.error(
+          "Verification failed",
+          "Your verification link may be invalid or expired."
+        );
+        router.push("/");
+        return;
+      }
+    };
+
+    verifyEmail();
+  }, [searchParams, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Success Card */}
         <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-8 text-center backdrop-blur-sm">
-          {/* Success Icon */}
           <div className="flex justify-center mb-6">
             <div className="relative">
               <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-xl animate-pulse" />
@@ -50,7 +82,7 @@ export default function VerifyEmailPage() {
             <Button
               onClick={() => router.push("/")}
               variant="outline"
-              className="w-full border-slate-600 text-slate-300 hover:bg-slate-700/50 hover:text-white font-semibold py-2.5 rounded-lg transition-all duration-200"
+              className="w-full border-slate-600 text-slate-300 bg-slate-700/50 text-white font-semibold py-2.5 rounded-lg transition-all duration-200"
             >
               Back to Home
             </Button>

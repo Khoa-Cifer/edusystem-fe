@@ -28,6 +28,7 @@ export default function SignupPage() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isRegistered, setIsRegistered] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -78,10 +79,18 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted:", formData);
-      const response = await register(formData);
-      if (response) {
-        setIsRegistered(true);
+      try {
+        setIsSubmitting(true);
+
+        console.log("Form submitted:", formData);
+        const response = await register(formData);
+        if (response) {
+          setIsRegistered(true);
+        }
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -321,8 +330,13 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <Button onClick={handleSubmit} className="w-full" size="lg">
-            Create account
+          <Button
+            onClick={handleSubmit}
+            className="w-full"
+            size="lg"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Creating..." : "Create account"}
           </Button>
         </div>
 
