@@ -1,11 +1,45 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/auth-context";
 import { CheckCircle2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { showNotification } from "./notification-helper";
 
 export function EmailVerificationContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("userId");
+  const token = searchParams.get("token");
+  const { confirmVerificationEmail } = useAuth();
+
+  useEffect(() => {
+    if (!userId || !token) {
+      showNotification.error(
+        "Invalid verification link",
+        "Missing user or token in the verification link."
+      );
+      router.push("/");
+      return;
+    }
+
+    const verifyEmail = async () => {
+      try {
+        await confirmVerificationEmail(userId, token);
+      } catch (error) {
+        console.error("Verification error:", error);
+        showNotification.error(
+          "Verification failed",
+          "Your verification link may be invalid or expired."
+        );
+        router.push("/");
+        return;
+      }
+    };
+
+    verifyEmail();
+  }, [searchParams, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
