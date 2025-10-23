@@ -8,7 +8,7 @@ export default function StudentDashboard() {
   return (
     <DashboardLayout role="student">
       <div className="space-y-6">
-        {/* Header */}
+      
         <div>
           <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
           <p className="text-muted-foreground">Welcome back, Emma Wilson</p>
