@@ -4,11 +4,11 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import http from "@/axios/http";
 import { jwtDecode } from "jwt-decode";
 import { UserClaims } from "@/interfaces/token";
-import { UserApi } from "@/axios/user";
 import { UserProfile, UserRegistrationFormData } from "@/interfaces/user";
 import { convertDateString } from "@/lib/utils";
 import { ResponseDto } from "@/interfaces/response-dto";
 import { showNotification } from "@/components/notification-helper";
+import { UserApi } from "@/axios/user";
 
 interface AuthContextType {
   login: (email: string, password: string) => Promise<ResponseDto<any>>;

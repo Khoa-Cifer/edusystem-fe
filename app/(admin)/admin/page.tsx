@@ -84,7 +84,7 @@ export default function SystemActivity() {
           {/* Activity Stats */}
           <div className="space-y-4">
             <Card className="p-6 bg-card border-border">
-              <h3 className="text-lg font-semibold mb-4">Today's Stats</h3>
+              <h3 className="text-lg font-semibold mb-4">Today&apos;s Stats</h3>
               <div className="space-y-4">
                 <div>
                   <div className="flex items-center justify-between mb-2">

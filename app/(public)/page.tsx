@@ -1,9 +1,28 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { BookOpen, Brain, BarChart3, Users, Zap, Shield } from "lucide-react"
+"use client";
+
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { BookOpen, Brain, BarChart3, Users, Zap, Shield } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+  const { userClaims } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (
+      userClaims &&
+      userClaims[
+        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+      ] == "ADMIN"
+    ) {
+      router.push("admin/users");
+    }
+  }, [userClaims]);
+
   return (
     <div className="min-h-screen bg-background dark">
       {/* Header */}
@@ -16,13 +35,22 @@ export default function HomePage() {
             <span className="text-xl font-semibold">EduFlow</span>
           </div>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="#features"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               Features
             </Link>
-            <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="#pricing"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               Pricing
             </Link>
-            <Link href="#about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="#about"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               About
             </Link>
           </nav>
@@ -47,8 +75,9 @@ export default function HomePage() {
             </span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 text-pretty max-w-2xl mx-auto leading-relaxed">
-            A comprehensive learning management system with smart review algorithms, collaborative lesson planning, and
-            powerful analytics to enhance education.
+            A comprehensive learning management system with smart review
+            algorithms, collaborative lesson planning, and powerful analytics to
+            enhance education.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild className="text-base">
@@ -61,7 +90,9 @@ export default function HomePage() {
       {/* Features Grid */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything you need to teach and learn</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Everything you need to teach and learn
+          </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Powerful features designed for teachers, students
           </p>
@@ -74,7 +105,8 @@ export default function HomePage() {
             </div>
             <h3 className="text-xl font-semibold mb-2">Lesson Planning</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Rich-text editor with templates. Create, organize, and share lesson plans with your team.
+              Rich-text editor with templates. Create, organize, and share
+              lesson plans with your team.
             </p>
           </Card>
 
@@ -84,7 +116,8 @@ export default function HomePage() {
             </div>
             <h3 className="text-xl font-semibold mb-2">Smart Review</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Spaced repetition using SM-2 algorithm. Optimize learning retention with intelligent review scheduling.
+              Spaced repetition using SM-2 algorithm. Optimize learning
+              retention with intelligent review scheduling.
             </p>
           </Card>
 
@@ -94,7 +127,8 @@ export default function HomePage() {
             </div>
             <h3 className="text-xl font-semibold mb-2">Analytics Dashboard</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Track progress, analyze performance, and identify areas for improvement with detailed insights.
+              Track progress, analyze performance, and identify areas for
+              improvement with detailed insights.
             </p>
           </Card>
 
@@ -104,7 +138,8 @@ export default function HomePage() {
             </div>
             <h3 className="text-xl font-semibold mb-2">Question Bank</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Create and manage MCQ, True/False, and short answer questions. Build quizzes automatically or manually.
+              Create and manage MCQ, True/False, and short answer questions.
+              Build quizzes automatically or manually.
             </p>
           </Card>
 
@@ -114,7 +149,8 @@ export default function HomePage() {
             </div>
             <h3 className="text-xl font-semibold mb-2">Works Offline</h3>
             <p className="text-muted-foreground leading-relaxed">
-              PWA support with offline capabilities. Take quizzes and review materials without internet connection.
+              PWA support with offline capabilities. Take quizzes and review
+              materials without internet connection.
             </p>
           </Card>
 
@@ -124,7 +160,8 @@ export default function HomePage() {
             </div>
             <h3 className="text-xl font-semibold mb-2">Role-Based Access</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Secure permissions for teachers, students, and admins. Control who can access and modify content.
+              Secure permissions for teachers, students, and admins. Control who
+              can access and modify content.
             </p>
           </Card>
         </div>
@@ -134,8 +171,12 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-20">
         <Card className="p-12 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 border-primary/20">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to transform your learning experience?</h2>
-            <p className="text-muted-foreground text-lg mb-8">Join thousands of educators and students using EduFlow</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ready to transform your learning experience?
+            </h2>
+            <p className="text-muted-foreground text-lg mb-8">
+              Join thousands of educators and students using EduFlow
+            </p>
             <Button size="lg" asChild>
               <Link href="/signup">Start learning today</Link>
             </Button>
@@ -153,10 +194,12 @@ export default function HomePage() {
               </div>
               <span className="font-semibold">EduFlow</span>
             </div>
-            <p className="text-sm text-muted-foreground">© 2025 EduFlow. All rights reserved.</p>
+            <p className="text-sm text-muted-foreground">
+              © 2025 EduFlow. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }

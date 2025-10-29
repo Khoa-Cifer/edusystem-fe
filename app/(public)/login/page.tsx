@@ -29,7 +29,6 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       const response = await login(email, password);
-      console.log(response);
       if (response.isSuccess) {
         router.push("/");
       }
