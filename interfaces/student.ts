@@ -1,16 +1,4 @@
-export interface ApplicationUser {
-  fullName: string;
-  birthDate: string;
-  address: string;
-  gender: string;
-  imageUrl: string;
-  status: string;
-  id: string;
-  userName: string;
-  email: string;
-  phoneNumber: string;
-  emailConfirmed: boolean;
-}
+import { ApplicationUser } from "./user";
 
 export interface Student {
   studentId: string;

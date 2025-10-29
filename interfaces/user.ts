@@ -22,3 +22,24 @@ export interface UserRegistrationFormData {
   gender: string;
   birthDate: string;
 }
+
+export interface FetchParams {
+  pageNumber?: number;
+  pageSize?: number;
+  filterQuery?: string;
+  sortBy?: "asc" | "desc";
+}
+
+export interface ApplicationUser {
+  fullName: string;
+  birthDate: string;
+  address: string;
+  gender: string;
+  imageUrl: string;
+  status: string;
+  id: string;
+  userName: string;
+  email: string;
+  phoneNumber: string;
+  emailConfirmed: boolean;
+}

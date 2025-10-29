@@ -3,11 +3,10 @@
 import { AddUserDialog } from "@/components/add-user-dialog";
 import { StudentsList } from "@/components/students-list";
 import { TeachersList } from "@/components/teachers-list";
-import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
-import { TabsTrigger } from "@radix-ui/react-tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 
-export default function AdminPage() {
+export default function UsersPage() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleUserAdded = () => {

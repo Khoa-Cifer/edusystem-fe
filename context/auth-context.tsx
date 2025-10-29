@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import http from "@/axios/http";
 import { jwtDecode } from "jwt-decode";
 import { UserClaims } from "@/interfaces/token";
 import { UserProfile, UserRegistrationFormData } from "@/interfaces/user";
@@ -9,6 +8,8 @@ import { convertDateString } from "@/lib/utils";
 import { ResponseDto } from "@/interfaces/response-dto";
 import { showNotification } from "@/components/notification-helper";
 import { UserApi } from "@/axios/user";
+import api from "@/axios/http";
+import { StudentApi } from "@/axios/student";
 
 interface AuthContextType {
   login: (email: string, password: string) => Promise<ResponseDto<any>>;
@@ -56,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     password: string
   ): Promise<ResponseDto<any>> => {
     try {
-      const response = await http.post("/auth/sign-in", {
+      const response = await api.post("/auth/sign-in", {
         email: email,
         password: password,
       });
@@ -87,32 +88,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const register = async (
     data: UserRegistrationFormData
   ): Promise<ResponseDto<any>> => {
-    try {
-      const response = await http.post("/auth/students-register", {
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.confirmPassword,
-        phoneNumber: data.phoneNumber,
-        fullName: data.fullName,
-        address: data.address,
-        gender: data.gender,
-        birthDate: convertDateString(data.birthDate),
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Register failed:", error);
-      const e: any = error;
-      const message = e.response.data.message || "Please try again";
-      showNotification.error("Registration Failed", message);
-      throw error;
-    }
+    const result = await StudentApi.studentRegister(data);
+    return result;
   };
 
   const sendVerificationEmail = async (
     email: string
   ): Promise<ResponseDto<any>> => {
     try {
-      const response = await http.post("/auth/email/verification/send", {
+      const response = await api.post("/auth/email/verification/send", {
         email: email,
       });
       showNotification.success(
@@ -134,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     token: string
   ): Promise<ResponseDto<any>> => {
     try {
-      const response = await http.post("/auth/email/verification/confirm", {
+      const response = await api.post("/auth/email/verification/confirm", {
         userId: userId,
         token: token,
       });

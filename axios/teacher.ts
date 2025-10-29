@@ -1,14 +1,14 @@
 import { ResponseDto } from "@/interfaces/response-dto";
-import { StudentResponse } from "@/interfaces/student";
-import api from "./http";
 import { FetchParams, UserRegistrationFormData } from "@/interfaces/user";
+import api from "./http";
 import { convertDateString } from "@/lib/utils";
 import { showNotification } from "@/components/notification-helper";
+import { TeacherResponse } from "@/interfaces/teacher";
 
-export class StudentApi {
-  static async getStudents(
+export class TeacherApi {
+  static async getTeachers(
     params: FetchParams = {}
-  ): Promise<ResponseDto<StudentResponse>> {
+  ): Promise<ResponseDto<TeacherResponse>> {
     const {
       pageNumber = 1,
       pageSize = 10,
@@ -23,13 +23,15 @@ export class StudentApi {
       filterQuery: filterQuery,
       sortBy,
     });
-    const response = await api.get(`/student?${queryParams}`);
+    const response = await api.get(`/teacher?${queryParams}`);
     return response.data;
   }
 
-  static async studentRegister(data: UserRegistrationFormData): Promise<ResponseDto<any>> {
+  static async teacherRegister(
+    data: UserRegistrationFormData
+  ): Promise<ResponseDto<any>> {
     try {
-      const response = await api.post("/auth/students-register", {
+      const response = await api.post("/auth/teacher-register", {
         email: data.email,
         password: data.password,
         confirmPassword: data.confirmPassword,
@@ -41,10 +43,10 @@ export class StudentApi {
       });
       return response.data;
     } catch (error) {
-      console.error("Register failed:", error);
+      console.error("Create account failed:", error);
       const e: any = error;
       const message = e.response.data.message || "Please try again";
-      showNotification.error("Registration Failed", message);
+      showNotification.error("Create Account Failed", message);
       throw error;
     }
   }

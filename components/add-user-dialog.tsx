@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import {
   Dialog,
@@ -22,28 +21,58 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
-
+import { StudentApi } from "@/axios/student";
+import { TeacherApi } from "@/axios/teacher";
+import { showNotification } from "./notification-helper";
 interface AddUserDialogProps {
   onUserAdded: () => void;
 }
 
 export function AddUserDialog({ onUserAdded }: AddUserDialogProps) {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState<"student" | "teacher">("student");
   const [formData, setFormData] = useState({
-    name: "",
+    fullName: "",
     email: "",
-    studentId: "",
-    department: "",
+    password: "",
+    confirmPassword: "",
+    phoneNumber: "",
+    address: "",
+    gender: "male",
+    birthDate: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send data to your backend
-    console.log("Adding user:", { userType, ...formData });
-    setFormData({ name: "", email: "", studentId: "", department: "" });
-    setOpen(false);
-    onUserAdded();
+
+    try {
+      setLoading(true);
+
+      if (userType === "student") {
+        await StudentApi.studentRegister(formData);
+      } else {
+        await TeacherApi.teacherRegister(formData);
+      }
+
+      showNotification.success("User Added", "User created successfully!");
+      onUserAdded();
+      setOpen(false);
+      setFormData({
+        fullName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        phoneNumber: "",
+        address: "",
+        gender: "male",
+        birthDate: "",
+      });
+    } catch (error) {
+      // error handled by service
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -54,96 +83,147 @@ export function AddUserDialog({ onUserAdded }: AddUserDialogProps) {
           Add User
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+
+      <DialogContent className="sm:max-w-[650px]">
         <DialogHeader>
           <DialogTitle>Add New User</DialogTitle>
           <DialogDescription>
             Add a new student or teacher to the system
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* User type */}
           <div className="space-y-2">
-            <Label htmlFor="userType">User Type</Label>
+            <Label>User Type</Label>
             <Select
               value={userType}
-              onValueChange={(value: any) => setUserType(value)}
+              onValueChange={(value: "student" | "teacher") =>
+                setUserType(value)
+              }
             >
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="student">Student</SelectItem>
+                {/* <SelectItem value="student">Student</SelectItem> */}
                 <SelectItem value="teacher">Teacher</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input
-              id="name"
-              placeholder="Enter full name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter email address"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              required
-            />
-          </div>
-
-          {userType === "student" && (
+          {/* 2-column layout for form fields */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="studentId">Student ID</Label>
+              <Label>Full Name</Label>
               <Input
-                id="studentId"
-                placeholder="e.g., STU001"
-                value={formData.studentId}
+                value={formData.fullName}
                 onChange={(e) =>
-                  setFormData({ ...formData, studentId: e.target.value })
+                  setFormData({ ...formData, fullName: e.target.value })
                 }
                 required
               />
             </div>
-          )}
 
-          {userType === "teacher" && (
             <div className="space-y-2">
-              <Label htmlFor="department">Department</Label>
+              <Label>Email</Label>
               <Input
-                id="department"
-                placeholder="e.g., Mathematics"
-                value={formData.department}
+                type="email"
+                value={formData.email}
                 onChange={(e) =>
-                  setFormData({ ...formData, department: e.target.value })
+                  setFormData({ ...formData, email: e.target.value })
                 }
                 required
               />
             </div>
-          )}
 
-          <div className="flex gap-3 pt-4">
+            <div className="space-y-2">
+              <Label>Password</Label>
+              <Input
+                type="password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Confirm Password</Label>
+              <Input
+                type="password"
+                value={formData.confirmPassword}
+                onChange={(e) =>
+                  setFormData({ ...formData, confirmPassword: e.target.value })
+                }
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Phone Number</Label>
+              <Input
+                value={formData.phoneNumber}
+                onChange={(e) =>
+                  setFormData({ ...formData, phoneNumber: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Birth Date</Label>
+              <Input
+                type="date"
+                value={formData.birthDate}
+                onChange={(e) =>
+                  setFormData({ ...formData, birthDate: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Gender</Label>
+              <Select
+                value={formData.gender}
+                onValueChange={(value: string) =>
+                  setFormData({ ...formData, gender: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2 sm:col-span-2">
+              <Label>Address</Label>
+              <Input
+                value={formData.address}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
+              disabled={loading}
             >
               Cancel
             </Button>
-            <Button type="submit">Add User</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Saving..." : "Add User"}
+            </Button>
           </div>
         </form>
       </DialogContent>
