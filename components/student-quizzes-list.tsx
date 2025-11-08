@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, ListChecks, Clock, User, Filter } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import api from "@/axios/http";
 
 interface Quiz {
   id: string;
@@ -24,98 +25,144 @@ interface Quiz {
   duration: string;
   teacher: string;
   publishedAt: string;
-  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  difficulty: "Beginner" | "Intermediate" | "Advanced" | string;
 }
 
-const mockQuizzes: Quiz[] = [
-  {
-    id: "q1",
-    title: "Algebra Basics Quiz",
-    description: "Test your knowledge of basic algebraic expressions and equations.",
-    subject: "Mathematics",
-    grade: "Grade 8",
-    questions: 15,
-    duration: "20 min",
-    teacher: "Ms. Johnson",
-    publishedAt: "2024-01-15",
-    difficulty: "Beginner",
-  },
-  {
-    id: "q2",
-    title: "Photosynthesis Quiz",
-    description: "Assess your understanding of the photosynthesis process in plants.",
-    subject: "Biology",
-    grade: "Grade 9",
-    questions: 20,
-    duration: "25 min",
-    teacher: "Mr. Smith",
-    publishedAt: "2024-01-14",
-    difficulty: "Intermediate",
-  },
-  {
-    id: "q3",
-    title: "World War II Quiz",
-    description: "Evaluate knowledge on major WWII events and impacts.",
-    subject: "History",
-    grade: "Grade 10",
-    questions: 25,
-    duration: "30 min",
-    teacher: "Mrs. Davis",
-    publishedAt: "2024-01-13",
-    difficulty: "Advanced",
-  },
-  {
-    id: "q4",
-    title: "Python Fundamentals Quiz",
-    description: "Check your grasp of basic Python syntax and concepts.",
-    subject: "Computer Science",
-    grade: "Grade 11",
-    questions: 18,
-    duration: "22 min",
-    teacher: "Mr. Wilson",
-    publishedAt: "2024-01-12",
-    difficulty: "Beginner",
-  },
-  {
-    id: "q5",
-    title: "Chemical Reactions Quiz",
-    description: "Test understanding of types of chemical reactions.",
-    subject: "Chemistry",
-    grade: "Grade 9",
-    questions: 16,
-    duration: "20 min",
-    teacher: "Dr. Brown",
-    publishedAt: "2024-01-11",
-    difficulty: "Intermediate",
-  },
-  {
-    id: "q6",
-    title: "Literary Analysis Quiz",
-    description: "Quiz on techniques used for analyzing literature.",
-    subject: "English Literature",
-    grade: "Grade 12",
-    questions: 22,
-    duration: "28 min",
-    teacher: "Ms. Garcia",
-    publishedAt: "2024-01-10",
-    difficulty: "Advanced",
-  },
-];
+// const mockQuizzes: Quiz[] = [
+//   {
+//     id: "q1",
+//     title: "Algebra Basics Quiz",
+//     description: "Test your knowledge of basic algebraic expressions and equations.",
+//     subject: "Mathematics",
+//     grade: "Grade 8",
+//     questions: 15,
+//     duration: "20 min",
+//     teacher: "Ms. Johnson",
+//     publishedAt: "2024-01-15",
+//     difficulty: "Beginner",
+//   },
+//   {
+//     id: "q2",
+//     title: "Photosynthesis Quiz",
+//     description: "Assess your understanding of the photosynthesis process in plants.",
+//     subject: "Biology",
+//     grade: "Grade 9",
+//     questions: 20,
+//     duration: "25 min",
+//     teacher: "Mr. Smith",
+//     publishedAt: "2024-01-14",
+//     difficulty: "Intermediate",
+//   },
+//   {
+//     id: "q3",
+//     title: "World War II Quiz",
+//     description: "Evaluate knowledge on major WWII events and impacts.",
+//     subject: "History",
+//     grade: "Grade 10",
+//     questions: 25,
+//     duration: "30 min",
+//     teacher: "Mrs. Davis",
+//     publishedAt: "2024-01-13",
+//     difficulty: "Advanced",
+//   },
+//   {
+//     id: "q4",
+//     title: "Python Fundamentals Quiz",
+//     description: "Check your grasp of basic Python syntax and concepts.",
+//     subject: "Computer Science",
+//     grade: "Grade 11",
+//     questions: 18,
+//     duration: "22 min",
+//     teacher: "Mr. Wilson",
+//     publishedAt: "2024-01-12",
+//     difficulty: "Beginner",
+//   },
+//   {
+//     id: "q5",
+//     title: "Chemical Reactions Quiz",
+//     description: "Test understanding of types of chemical reactions.",
+//     subject: "Chemistry",
+//     grade: "Grade 9",
+//     questions: 16,
+//     duration: "20 min",
+//     teacher: "Dr. Brown",
+//     publishedAt: "2024-01-11",
+//     difficulty: "Intermediate",
+//   },
+//   {
+//     id: "q6",
+//     title: "Literary Analysis Quiz",
+//     description: "Quiz on techniques used for analyzing literature.",
+//     subject: "English Literature",
+//     grade: "Grade 12",
+//     questions: 22,
+//     duration: "28 min",
+//     teacher: "Ms. Garcia",
+//     publishedAt: "2024-01-10",
+//     difficulty: "Advanced",
+//   },
+// ];
 
 export function StudentQuizzesList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("all");
   const [selectedGrade, setSelectedGrade] = useState("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchQuizzes = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await api.get("/quiz/get/all", {
+          params: { pageNumber: 1, pageSize: 10 },
+        });
+        const items: any[] = res?.data?.result?.data ?? [];
+        const normalized: Quiz[] = items.map((item: any, idx: number) => ({
+          id: String(item.id ?? item.quizId ?? idx),
+          title: item.title ?? item.quizName ?? "Untitled Quiz",
+          description: item.description ?? "",
+          subject: item.subject ?? item.category ?? "",
+          grade: item.grade ?? item.gradeLevel ?? "",
+          questions: Number(item.questionCount ?? item.questions ?? 0),
+          duration: item.durationInMinutes
+            ? `${item.durationInMinutes} min`
+            : typeof item.duration === "number"
+            ? `${item.duration} min`
+            : item.duration ?? "",
+          teacher: item.createdBy ?? item.teacher ?? "",
+          publishedAt:
+            typeof item.createdAt === "string"
+              ? item.createdAt.slice(0, 10)
+              : item.publishedAt ?? "",
+          difficulty: item.difficulty ?? "",
+        }));
+        setQuizzes(normalized);
+      } catch (err: any) {
+        setError(
+          err?.response?.data?.message ?? "Failed to load quizzes. Please try again."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQuizzes();
+  }, []);
 
   const subjects = [
     "all",
-    ...Array.from(new Set(mockQuizzes.map((quiz) => quiz.subject))),
+    ...Array.from(new Set(quizzes.map((quiz) => quiz.subject).filter(Boolean))),
   ];
-  const grades = ["all", ...Array.from(new Set(mockQuizzes.map((quiz) => quiz.grade)))];
+  const grades = [
+    "all",
+    ...Array.from(new Set(quizzes.map((quiz) => quiz.grade).filter(Boolean))),
+  ];
   const difficulties = ["all", "Beginner", "Intermediate", "Advanced"];
 
-  const filteredQuizzes = mockQuizzes.filter((quiz) => {
+  const filteredQuizzes = quizzes.filter((quiz) => {
     const matchesSearch =
       quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       quiz.description.toLowerCase().includes(searchTerm.toLowerCase());

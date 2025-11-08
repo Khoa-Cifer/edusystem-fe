@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, BookOpen, Clock, User, Filter } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,129 +13,70 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface Lesson {
-  id: string;
-  title: string;
-  description: string;
-  subject: string;
-  grade: string;
-  duration: string;
-  teacher: string;
-  publishedAt: string;
-  difficulty: "Beginner" | "Intermediate" | "Advanced";
+import api from "@/axios/http";
+interface ApiLesson {
+  lessonId: string;
+  unitName: string;
+  lessonName: string;
+  skill: string;
+  content: string;
+  duration: number;
+  orderIndex: number;
+  status: string;
+  createBy: string;
+  createTime: string;
+  updateBy: string | null;
+  updateTime: string | null;
 }
-
-const mockLessons: Lesson[] = [
-  {
-    id: "1",
-    title: "Introduction to Algebra",
-    description:
-      "Learn the basics of algebraic expressions and equations with practical examples.",
-    subject: "Mathematics",
-    grade: "Grade 8",
-    duration: "45 min",
-    teacher: "Ms. Johnson",
-    publishedAt: "2024-01-15",
-    difficulty: "Beginner",
-  },
-  {
-    id: "2",
-    title: "Photosynthesis Process",
-    description:
-      "Understanding how plants convert sunlight into energy through photosynthesis.",
-    subject: "Biology",
-    grade: "Grade 9",
-    duration: "60 min",
-    teacher: "Mr. Smith",
-    publishedAt: "2024-01-14",
-    difficulty: "Intermediate",
-  },
-  {
-    id: "3",
-    title: "World War II Overview",
-    description:
-      "A comprehensive look at the major events and impacts of World War II.",
-    subject: "History",
-    grade: "Grade 10",
-    duration: "90 min",
-    teacher: "Mrs. Davis",
-    publishedAt: "2024-01-13",
-    difficulty: "Advanced",
-  },
-  {
-    id: "4",
-    title: "Basic Python Programming",
-    description:
-      "Introduction to Python programming language with hands-on exercises.",
-    subject: "Computer Science",
-    grade: "Grade 11",
-    duration: "75 min",
-    teacher: "Mr. Wilson",
-    publishedAt: "2024-01-12",
-    difficulty: "Beginner",
-  },
-  {
-    id: "5",
-    title: "Chemical Reactions",
-    description:
-      "Explore different types of chemical reactions and their applications.",
-    subject: "Chemistry",
-    grade: "Grade 9",
-    duration: "50 min",
-    teacher: "Dr. Brown",
-    publishedAt: "2024-01-11",
-    difficulty: "Intermediate",
-  },
-  {
-    id: "6",
-    title: "Literary Analysis Techniques",
-    description:
-      "Learn how to analyze literary works using various critical approaches.",
-    subject: "English Literature",
-    grade: "Grade 12",
-    duration: "80 min",
-    teacher: "Ms. Garcia",
-    publishedAt: "2024-01-10",
-    difficulty: "Advanced",
-  },
-];
 
 export function StudentLessonsList() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("all");
-  const [selectedGrade, setSelectedGrade] = useState("all");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("all");
+  const [selectedSkill, setSelectedSkill] = useState("all");
+  const [selectedUnit, setSelectedUnit] = useState("all");
+  const [lessons, setLessons] = useState<ApiLesson[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const subjects = [
-    "all",
-    ...Array.from(new Set(mockLessons.map((lesson) => lesson.subject))),
-  ];
-  const grades = [
-    "all",
-    ...Array.from(new Set(mockLessons.map((lesson) => lesson.grade))),
-  ];
-  const difficulties = ["all", "Beginner", "Intermediate", "Advanced"];
+  useEffect(() => {
+    const fetchLessons = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await api.get("/lesson/get/all", {
+          params: { pageNumber: 1, pageSize: 10 },
+        });
+        const data: ApiLesson[] = res.data.result?.data ?? [];
+        setLessons(data);
+      } catch (e: any) {
+        setError(e?.response?.data?.message || "Failed to load lessons");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchLessons();
+  }, []);
 
-  const filteredLessons = mockLessons.filter((lesson) => {
+  const skills = ["all", ...Array.from(new Set(lessons.map((l) => l.skill)))];
+  const units = ["all", ...Array.from(new Set(lessons.map((l) => l.unitName)))];
+
+  const filteredLessons = lessons.filter((lesson) => {
     const matchesSearch =
-      lesson.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lesson.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSubject = selectedSubject === "all" || lesson.subject === selectedSubject;
-    const matchesGrade = selectedGrade === "all" || lesson.grade === selectedGrade;
-    const matchesDifficulty =
-      selectedDifficulty === "all" || lesson.difficulty === selectedDifficulty;
-
-    return matchesSearch && matchesSubject && matchesGrade && matchesDifficulty;
+      lesson.lessonName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lesson.content.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSkill = selectedSkill === "all" || lesson.skill === selectedSkill;
+    const matchesUnit = selectedUnit === "all" || lesson.unitName === selectedUnit;
+    return matchesSearch && matchesSkill && matchesUnit;
   });
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "Beginner":
+  const getSkillColor = (skill: string) => {
+    switch (skill) {
+      case "Speaking":
         return "bg-green-100 text-green-800";
-      case "Intermediate":
+      case "Listening":
+        return "bg-blue-100 text-blue-800";
+      case "Reading":
         return "bg-yellow-100 text-yellow-800";
-      case "Advanced":
+      case "Writing":
         return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -160,16 +101,16 @@ export function StudentLessonsList() {
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-2">
               <Filter className="h-4 w-4" />
-              Subject
+              Skill
             </label>
-            <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+            <Select value={selectedSkill} onValueChange={setSelectedSkill}>
               <SelectTrigger>
-                <SelectValue placeholder="Select subject" />
+                <SelectValue placeholder="Select skill" />
               </SelectTrigger>
               <SelectContent>
-                {subjects.map((subject) => (
-                  <SelectItem key={subject} value={subject}>
-                    {subject === "all" ? "All Subjects" : subject}
+                {skills.map((skill) => (
+                  <SelectItem key={skill} value={skill}>
+                    {skill === "all" ? "All Skills" : skill}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -177,34 +118,15 @@ export function StudentLessonsList() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Grade</label>
-            <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+            <label className="text-sm font-medium">Unit</label>
+            <Select value={selectedUnit} onValueChange={setSelectedUnit}>
               <SelectTrigger>
-                <SelectValue placeholder="Select grade" />
+                <SelectValue placeholder="Select unit" />
               </SelectTrigger>
               <SelectContent>
-                {grades.map((grade) => (
-                  <SelectItem key={grade} value={grade}>
-                    {grade === "all" ? "All Grades" : grade}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Difficulty</label>
-            <Select
-              value={selectedDifficulty}
-              onValueChange={setSelectedDifficulty}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select difficulty" />
-              </SelectTrigger>
-              <SelectContent>
-                {difficulties.map((difficulty) => (
-                  <SelectItem key={difficulty} value={difficulty}>
-                    {difficulty === "all" ? "All Levels" : difficulty}
+                {units.map((unit) => (
+                  <SelectItem key={unit} value={unit}>
+                    {unit === "all" ? "All Units" : unit}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -215,44 +137,50 @@ export function StudentLessonsList() {
 
       {/* Lessons Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredLessons.map((lesson) => (
-          <Card key={lesson.id} className="p-6 hover:shadow-lg transition-shadow">
+        {isLoading && (
+          <div className="col-span-full text-center text-muted-foreground">Loading lessons...</div>
+        )}
+        {error && (
+          <div className="col-span-full text-center text-red-600">{error}</div>
+        )}
+        {!isLoading && !error && filteredLessons.map((lesson) => (
+          <Card key={lesson.lessonId} className="p-6 hover:shadow-lg transition-shadow">
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <BookOpen className="h-8 w-8 text-primary" />
-                <Badge className={getDifficultyColor(lesson.difficulty)}>
-                  {lesson.difficulty}
+                <Badge className={getSkillColor(lesson.skill)}>
+                  {lesson.skill}
                 </Badge>
               </div>
 
               <div className="space-y-2">
                 <h3 className="text-xl font-semibold line-clamp-2">
-                  {lesson.title}
+                  {lesson.lessonName}
                 </h3>
                 <p className="text-muted-foreground text-sm line-clamp-3">
-                  {lesson.description}
+                  {lesson.content}
                 </p>
               </div>
 
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">Subject:</span>
-                  <Badge variant="secondary">{lesson.subject}</Badge>
+                  <span className="font-medium">Unit:</span>
+                  <Badge variant="secondary">{lesson.unitName}</Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">Grade:</span>
-                  <Badge variant="outline">{lesson.grade}</Badge>
+                  <span className="font-medium">Status:</span>
+                  <Badge variant="outline">{lesson.status}</Badge>
                 </div>
               </div>
 
               <div className="flex items-center justify-between text-sm text-muted-foreground pt-4 border-t">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  <span>{lesson.teacher}</span>
+                  <span>{lesson.createBy}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
-                  <span>{lesson.duration}</span>
+                  <span>{lesson.duration} min</span>
                 </div>
               </div>
 
@@ -264,7 +192,7 @@ export function StudentLessonsList() {
         ))}
       </div>
 
-      {filteredLessons.length === 0 && (
+      {!isLoading && !error && filteredLessons.length === 0 && (
         <div className="text-center py-12">
           <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">No lessons found</h3>
