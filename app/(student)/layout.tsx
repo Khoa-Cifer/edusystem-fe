@@ -3,7 +3,7 @@
 import type React from "react";
 import { StudentLayout } from "@/components/student-layout";
 import { jwtDecode } from "jwt-decode";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 export default function StudentRoleLayout({
@@ -12,8 +12,14 @@ export default function StudentRoleLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
+    // Bypass auth for public student pages
+    if (pathname === "/student-lessons" || pathname === "/student-quizzes") {
+      return;
+    }
+
     const token = localStorage.getItem("accessToken");
     if (!token) {
       router.push("/login");
@@ -28,7 +34,7 @@ export default function StudentRoleLayout({
     } catch {
       router.push("/login");
     }
-  }, [router]);
+  }, [router, pathname]);
 
   return <StudentLayout>{children}</StudentLayout>;
 }
