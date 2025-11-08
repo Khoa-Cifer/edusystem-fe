@@ -27,9 +27,10 @@ export function StudentLayout({ children }: StudentLayoutProps) {
   const pathname = usePathname();
 
   const studentNav = [
-    { name: "Dashboard", href: "/(student)/dashboard", icon: Home },
+    { name: "Dashboard", href: "/student-dashboard", icon: Home },
     { name: "My Courses", href: "/(student)/courses", icon: BookOpen },
-    { name: "Quizzes", href: "/(student)/quizzes", icon: Brain },
+    { name: "Lessons", href: "/student-lessons", icon: BookOpen },
+    { name: "Quizzes", href: "/student-quizzes", icon: Brain },
     { name: "Review", href: "/(student)/review", icon: Brain },
     { name: "Progress", href: "/(student)/progress", icon: BarChart3 },
   ];
