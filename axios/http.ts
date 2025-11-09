@@ -82,6 +82,15 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
+        // Allow certain requests to skip the auto-redirect on auth failure
+        const skipAuthRedirect =
+          (originalRequest as any)?.skipAuthRedirect === true ||
+          !!((originalRequest as any)?.headers?.["x-skip-auth-redirect"]);
+
+        if (skipAuthRedirect) {
+          return Promise.reject(refreshError);
+        }
+
         localStorage.removeItem("accessToken");
         if (typeof window !== "undefined") {
           window.location.href = "/login";
