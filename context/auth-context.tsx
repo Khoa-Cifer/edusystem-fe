@@ -78,6 +78,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       localStorage.removeItem("accessToken");
       setAccessTokenState(null);
+      setCurrentUserClaims(null);
+      setCurrentUserProfile(null);
       return true;
     } catch (error) {
       console.error("Logout failed:", error);
