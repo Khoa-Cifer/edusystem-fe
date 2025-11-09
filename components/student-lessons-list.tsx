@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Search, BookOpen, Clock, User, Filter } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -178,14 +179,16 @@ export function StudentLessonsList() {
                   <User className="h-4 w-4" />
                   <span>{lesson.createBy}</span>
                 </div>
-                <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
                   <span>{lesson.duration} min</span>
                 </div>
               </div>
 
-              <Button className="w-full" variant="default">
-                Start Learning
+              <Button className="w-full" variant="default" asChild>
+                <Link href={`/student-lessons/${lesson.lessonId}`}>
+                  Start Learning
+                </Link>
               </Button>
             </div>
           </Card>
