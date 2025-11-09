@@ -3,14 +3,17 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BookOpen, Brain, BarChart3, Users, Zap, Shield } from "lucide-react";
+import { BookOpen, Brain, BarChart3, Users, Zap, Shield, ListChecks, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function HomePage() {
-  const { userClaims } = useAuth();
+  const { userClaims, authenticatedUser, logout } = useAuth();
   const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuContainerRef = useRef<HTMLDivElement | null>(null);
+  const displayName = authenticatedUser?.fullName || userClaims?.FullName;
 
   useEffect(() => {
     if (
@@ -22,6 +25,22 @@ export default function HomePage() {
       router.push("admin/users");
     }
   }, [userClaims]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isMenuOpen &&
+        menuContainerRef.current &&
+        !menuContainerRef.current.contains(event.target as Node)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   return (
     <div className="min-h-screen bg-background dark">
@@ -55,12 +74,73 @@ export default function HomePage() {
             </Link>
           </nav>
           <div className="flex items-center gap-3">
-            <Button asChild>
-              <Link href="/login">Log in</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/signup">Sign up</Link>
-            </Button>
+            {displayName ? (
+              <div className="relative" ref={menuContainerRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsMenuOpen((prev) => !prev)}
+                  className="text-sm font-medium px-3 py-2 rounded hover:bg-muted"
+                >
+                  {displayName}
+                </button>
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-56 rounded-md border border-border bg-card shadow-lg z-50 overflow-hidden">
+                    <div className="px-4 py-3 border-b border-border bg-muted/30">
+                      <p className="text-xs text-muted-foreground">Signed in as</p>
+                      <p className="text-sm font-semibold truncate">{displayName}</p>
+                    </div>
+                    <div className="py-1">
+                      <Link
+                        href="/student-lessons"
+                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <BookOpen className="h-4 w-4" />
+                        <span>Lessons</span>
+                      </Link>
+                      <Link
+                        href="/student-quizzes"
+                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <ListChecks className="h-4 w-4" />
+                        <span>Quizzes</span>
+                      </Link>
+                      <Link
+                        href="/student-dashboard"
+                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <LayoutDashboard className="h-4 w-4" />
+                        <span>Dashboard</span>
+                      </Link>
+                    </div>
+                    <div className="border-t border-border p-3">
+                      <Button
+                        variant="destructive"
+                        className="w-full"
+                        onClick={async () => {
+                          await logout();
+                          setIsMenuOpen(false);
+                          router.push("/login");
+                        }}
+                      >
+                        Log out
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Button asChild>
+                  <Link href="/login">Log in</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/signup">Sign up</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </header>

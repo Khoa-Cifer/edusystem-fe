@@ -3,9 +3,10 @@
 import type React from "react";
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/context/auth-context";
 import {
   BookOpen,
   Brain,
@@ -25,14 +26,24 @@ interface StudentLayoutProps {
 export function StudentLayout({ children }: StudentLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { authenticatedUser, userClaims, logout } = useAuth();
+  const displayName =
+    authenticatedUser?.fullName || userClaims?.FullName || "Student";
+  const initials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   const studentNav = [
     { name: "Dashboard", href: "/student-dashboard", icon: Home },
-    { name: "My Courses", href: "/(student)/courses", icon: BookOpen },
+    // { name: "My Courses", href: "/(student)/courses", icon: BookOpen },
     { name: "Lessons", href: "/student-lessons", icon: BookOpen },
     { name: "Quizzes", href: "/student-quizzes", icon: Brain },
-    { name: "Review", href: "/(student)/review", icon: Brain },
-    { name: "Progress", href: "/(student)/progress", icon: BarChart3 },
+    // { name: "Review", href: "/(student)/review", icon: Brain },
+    // { name: "Progress", href: "/(student)/progress", icon: BarChart3 },
   ];
 
   return (
@@ -56,7 +67,7 @@ export function StudentLayout({ children }: StudentLayoutProps) {
           {/* Logo */}
           <div className="p-6 border-b border-border flex items-center justify-between">
             <Link
-              href="/(student)/dashboard"
+              href="/"
               className="flex items-center gap-2"
             >
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
@@ -104,21 +115,25 @@ export function StudentLayout({ children }: StudentLayoutProps) {
             <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors cursor-pointer">
               <Avatar>
                 <AvatarFallback className="bg-primary text-primary-foreground">
-                  JS
+                  {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium truncate">John Student</div>
+                <div className="text-sm font-medium truncate">{displayName}</div>
                 <div className="text-xs text-muted-foreground">Student</div>
               </div>
             </div>
             <Button
-              variant="outline"
+              variant="destructive"
               size="sm"
-              className="w-full justify-start bg-transparent"
+              className="w-full"
+              onClick={async () => {
+                await logout();
+                router.push("/login");
+              }}
             >
               <LogOut className="w-4 h-4 mr-2" />
-              Logout
+              Log out
             </Button>
           </div>
         </div>
