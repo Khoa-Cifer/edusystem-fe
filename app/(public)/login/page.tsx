@@ -10,6 +10,7 @@ import { useAuth } from "@/context/auth-context";
 import { useState } from "react";
 import { showNotification } from "@/components/notification-helper";
 import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -30,6 +31,28 @@ export default function LoginPage() {
     try {
       const response = await login(email, password);
       if (response.isSuccess) {
+        const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+        if (token) {
+          try {
+            const decoded = jwtDecode<any>(token);
+            const roleClaim = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+            const role = Array.isArray(roleClaim) ? roleClaim[0] : roleClaim;
+
+            if (role === "ADMIN") {
+              router.push("/admin");
+              return;
+            }
+            if (role === "TEACHER") {
+              router.push("/teacher-dashboard");
+              return;
+            }
+            if (role === "STUDENT") {
+              router.push("/");
+              return;
+            }
+          } catch {
+          }
+        }
         router.push("/");
       }
     } catch (err) {
