@@ -15,8 +15,11 @@ export default function StudentRoleLayout({
   const pathname = usePathname();
 
   useEffect(() => {
-
-    if (pathname === "/student-lessons" || pathname === "/student-quizzes") {
+    // Bypass auth cho toàn bộ đường dẫn student-lessons/* và student-quizzes/*
+    if (
+      pathname?.startsWith("/student-lessons") ||
+      pathname?.startsWith("/student-quizzes")
+    ) {
       return;
     }
 
