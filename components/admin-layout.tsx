@@ -9,13 +9,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   LayoutDashboard,
   Users,
-  Activity,
-  BarChart3,
-  Settings,
   Bell,
   Menu,
   X,
   LogOut,
+  Book,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,9 +28,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const adminNav = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "User Management", href: "/admin/users", icon: Users },
-    { name: "System Activity", href: "/admin/activity", icon: Activity },
-    { name: "Reports", href: "/admin/reports", icon: BarChart3 },
-    { name: "Settings", href: "/admin/settings", icon: Settings },
+    { name: "Lesson Management", href: "/admin/lessons", icon: Book },
   ];
 
   return (

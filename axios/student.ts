@@ -3,9 +3,6 @@ import { StudentResponse } from "@/interfaces/student";
 import api from "./http";
 import { FetchParams, UserRegistrationFormData } from "@/interfaces/user";
 import { convertDateString } from "@/lib/utils";
-import { useSonner } from "@/hooks/use-sonner";
-
-const { showToast } = useSonner();
 
 export class StudentApi {
   static async getStudents(
@@ -46,12 +43,6 @@ export class StudentApi {
       return response.data;
     } catch (error) {
       console.error("Register failed:", error);
-      const e: any = error;
-      const message = e.response.data.message || "Please try again";
-      showToast("error", {
-        title: "Registration Failed",
-        description: message,
-      });
       throw error;
     }
   }

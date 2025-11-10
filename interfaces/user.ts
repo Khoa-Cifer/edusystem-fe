@@ -26,6 +26,7 @@ export interface UserRegistrationFormData {
 export interface FetchParams {
   pageNumber?: number;
   pageSize?: number;
+  filterOn?: string;
   filterQuery?: string;
   sortBy?: "asc" | "desc";
 }

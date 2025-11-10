@@ -3,9 +3,6 @@ import { FetchParams, UserRegistrationFormData } from "@/interfaces/user";
 import api from "./http";
 import { convertDateString } from "@/lib/utils";
 import { TeacherResponse } from "@/interfaces/teacher";
-import { useSonner } from "@/hooks/use-sonner";
-
-const { showToast } = useSonner();
 
 export class TeacherApi {
   static async getTeachers(
@@ -46,12 +43,6 @@ export class TeacherApi {
       return response.data;
     } catch (error) {
       console.error("Create account failed:", error);
-      const e: any = error;
-      const message = e.response.data.message || "Please try again";
-      showToast("error", {
-        title: "Create Account Failed",
-        description: message,
-      });
       throw error;
     }
   }
