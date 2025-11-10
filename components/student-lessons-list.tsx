@@ -186,7 +186,7 @@ export function StudentLessonsList() {
               </div>
 
               <Button className="w-full" variant="default" asChild>
-                <Link href={`/student-lessons/${lesson.lessonId}`}>
+                <Link href={`/student-lessons/${lesson.lessonId}/unit`}>
                   Start Learning
                 </Link>
               </Button>

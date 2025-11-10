@@ -15,7 +15,7 @@ export default function StudentRoleLayout({
   const pathname = usePathname();
 
   useEffect(() => {
-    // Bypass auth for public student pages
+
     if (pathname === "/student-lessons" || pathname === "/student-quizzes") {
       return;
     }
