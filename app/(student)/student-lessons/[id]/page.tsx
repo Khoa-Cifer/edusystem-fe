@@ -37,7 +37,6 @@ export default function LessonDetailPage() {
       setError(null);
       try {
         const res = await api.get(`/lessoncontent/get/${lessonId}`, {
-          // Mark this request to skip auth redirect so we can show UI message
           headers: { "x-skip-auth-redirect": "true" },
         });
         // API expected shape: ResponseDto<LessonDetail>
@@ -151,7 +150,6 @@ export default function LessonDetailPage() {
             </div>
           )}
 
-          {/* Fallback: show raw data if structure is unknown */}
           {!data.sections && !data.content && (
             <Card className="p-6">
               <div className="text-sm text-muted-foreground">

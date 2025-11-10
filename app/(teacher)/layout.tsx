@@ -11,8 +11,8 @@ export default function TeacherRoleLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
-
+ const router = useRouter();
+ 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -21,20 +21,14 @@ export default function TeacherRoleLayout({
     }
 
     try {
-      const decoded: any = jwtDecode(token);
+      const decoded = jwtDecode(token) as any;
       const role =
         decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-
-      // CHỈ ALLOW TEACHER
-      if (role !== "TEACHER") {
-        router.push("/403");
-        return;
-      }
+      if (role !== "TEACHER") router.push("/403");
     } catch {
       router.push("/login");
-      return;
     }
-  }, []); // <-- chạy 1 lần khi layout mount
-
-  return <TeacherLayout>{children}</TeacherLayout>;
+  }, [router]);
+ 
+   return <TeacherLayout>{children}</TeacherLayout>;
 }
