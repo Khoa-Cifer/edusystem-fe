@@ -10,10 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BookOpen, CheckCircle, Mail, ArrowRight } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
-import { showNotification } from "@/components/notification-helper";
+import { useSonner } from "@/hooks/use-sonner";
 
 export default function SignupPage() {
   const { register, sendVerificationEmail } = useAuth();
+  const { showToast } = useSonner();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -42,7 +43,10 @@ export default function SignupPage() {
 
   const handleSendEmail = async () => {
     if (!formData.email) {
-      showNotification.error("Error", "Email not found");
+      showToast("error", {
+        title: "Error",
+        description: "Email not found",
+      });
       return;
     }
 

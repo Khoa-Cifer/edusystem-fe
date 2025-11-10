@@ -23,7 +23,8 @@ import {
 import { Plus } from "lucide-react";
 import { StudentApi } from "@/axios/student";
 import { TeacherApi } from "@/axios/teacher";
-import { showNotification } from "./notification-helper";
+import { useSonner } from "@/hooks/use-sonner";
+
 interface AddUserDialogProps {
   onUserAdded: () => void;
 }
@@ -42,6 +43,7 @@ export function AddUserDialog({ onUserAdded }: AddUserDialogProps) {
     gender: "male",
     birthDate: "",
   });
+  const { showToast } = useSonner();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,8 +56,10 @@ export function AddUserDialog({ onUserAdded }: AddUserDialogProps) {
       } else {
         await TeacherApi.teacherRegister(formData);
       }
-
-      showNotification.success("User Added", "User created successfully!");
+      showToast("success", {
+        title: "User Added",
+        description: "User created successfully!",
+      });
       onUserAdded();
       setOpen(false);
       setFormData({

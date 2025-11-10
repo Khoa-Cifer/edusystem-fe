@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
+import { useSonner } from "@/hooks/use-sonner";
 import { CheckCircle2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { showNotification } from "./notification-helper";
 
 export function EmailVerificationContent() {
   const router = useRouter();
@@ -13,13 +13,14 @@ export function EmailVerificationContent() {
   const userId = searchParams.get("userId");
   const token = searchParams.get("token");
   const { confirmVerificationEmail } = useAuth();
+  const { showToast } = useSonner();
 
   useEffect(() => {
     if (!userId || !token) {
-      showNotification.error(
-        "Invalid verification link",
-        "Missing user or token in the verification link."
-      );
+      showToast("error", {
+        title: "Invalid verification link",
+        description: "Missing user or token in the verification link.",
+      });
       router.push("/");
       return;
     }
@@ -29,10 +30,10 @@ export function EmailVerificationContent() {
         await confirmVerificationEmail(userId, token);
       } catch (error) {
         console.error("Verification error:", error);
-        showNotification.error(
-          "Verification failed",
-          "Your verification link may be invalid or expired."
-        );
+        showToast("error", {
+          title: "Verification failed",
+          description: "Your verification link may be invalid or expired.",
+        });
         router.push("/");
         return;
       }

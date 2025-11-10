@@ -4,12 +4,11 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { UserClaims } from "@/interfaces/token";
 import { UserProfile, UserRegistrationFormData } from "@/interfaces/user";
-import { convertDateString } from "@/lib/utils";
 import { ResponseDto } from "@/interfaces/response-dto";
-import { showNotification } from "@/components/notification-helper";
 import { UserApi } from "@/axios/user";
 import api from "@/axios/http";
 import { StudentApi } from "@/axios/student";
+import { useSonner } from "@/hooks/use-sonner";
 
 interface AuthContextType {
   login: (email: string, password: string) => Promise<ResponseDto<any>>;
@@ -36,6 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   );
   const [currentUserProfile, setCurrentUserProfile] =
     useState<UserProfile | null>(null);
+  const { showToast } = useSonner();
 
   const fetchUserInfo = async () => {
     const response = await UserApi.getUserInfo();
@@ -69,7 +69,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Login failed:", error);
       const e: any = error;
       const message = e.response.data.message || "Please try again";
-      showNotification.error("Login Failed", message);
+      showToast("error", {
+        title: "Login Failed",
+        description: message,
+      });
       throw error;
     }
   };
@@ -101,16 +104,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const response = await api.post("/auth/email/verification/send", {
         email: email,
       });
-      showNotification.success(
-        "Verification Sent successfully",
-        response.data.message
-      );
+      showToast("success", {
+        title: "Verification Sent successfully",
+        description: response.data.message,
+      });
       return response.data;
     } catch (error) {
       console.error("Verification failed:", error);
       const e: any = error;
       const message = e.response.data.message || "Please try again";
-      showNotification.error("Verification Failed", message);
+      showToast("error", {
+        title: "Verification Failed",
+        description: message,
+      });
       throw error;
     }
   };
@@ -129,7 +135,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Verification failed:", error);
       const e: any = error;
       const message = e.response.data.message || "Please try again";
-      showNotification.error("Verification Failed", message);
+      showToast("error", {
+        title: "Verification Failed",
+        description: message,
+      });
       throw error;
     }
   };

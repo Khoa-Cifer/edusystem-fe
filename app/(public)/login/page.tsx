@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { BookOpen } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useState } from "react";
-import { showNotification } from "@/components/notification-helper";
 import { useRouter } from "next/navigation";
+import { useSonner } from "@/hooks/use-sonner";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -17,13 +17,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { showToast } = useSonner();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      showNotification.warning(
-        "Email or password not found",
-        "Please input email and password"
-      );
+      showToast("warning", {
+        title: "Email or password not found",
+        description: "Please input email and password",
+      });
       return;
     }
     setIsSubmitting(true);
