@@ -1,5 +1,5 @@
 "use client"
-
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,8 +21,10 @@ import {
   ChevronLeft,
 } from "lucide-react"
 import Link from "next/link"
-
+import api from "@/axios/http"
+import axios from "axios"
 interface LessonEditorProps {
+  lessonId?: string;          // <--- thêm dòng này
   initialData?: {
     title: string
     subject: string
@@ -31,11 +33,78 @@ interface LessonEditorProps {
   }
 }
 
-export function LessonEditor({ initialData }: LessonEditorProps) {
+export function LessonEditor({ lessonId, initialData }: LessonEditorProps) {
   const [title, setTitle] = useState(initialData?.title || "")
   const [subject, setSubject] = useState(initialData?.subject || "")
   const [grade, setGrade] = useState(initialData?.grade || "")
   const [content, setContent] = useState(initialData?.content || "")
+  const router = useRouter()
+  // C:\Users\peolu\SWP391\SWD392\edusystem-fe\components\lesson-editor.tsx:60
+
+const handleSave = async () => {
+  if (!lessonId) {
+    alert("lessonId is required for update");
+    return;
+  }
+
+  // --- 1. Define the JSON Request Body ---
+  const requestBody = {
+    lessonId: lessonId,
+    unitId: "actual-unit-uuid", // Ensure this is a real UUID
+    lessonName: title,
+    skill: subject,
+    content: content,
+    duration: 0,
+    orderIndex: 0,
+    grade: grade,
+  };
+
+  try {
+    // --- 2. Call PUT update lesson using JSON (Axios defaults to 'application/json') ---
+    await api.put("/lesson/update", requestBody); // Content-Type: application/json
+
+    alert("Lesson updated successfully!");
+    router.push("/lessons");
+  } catch (err: any) {
+    // If error is 401, try refresh token
+    if (err.response?.status === 401) {
+      try {
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) throw new Error("No refresh token found");
+
+        // --- 3. Define the JSON Request Body for Refresh Token ---
+        const refreshBody = {
+          refreshToken: refreshToken
+        };
+
+        // --- 4. Call POST refresh token using JSON ---
+        const refreshRes = await axios.post(
+          "https://edusystem-cbetcqczbbb2gchx.southeastasia-01.azurewebsites.net/api/auth/refresh-token",
+          refreshBody, // Pass URLSearchParams object directly
+    { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+);
+
+        // Save new tokens
+        localStorage.setItem("accessToken", refreshRes.data.accessToken);
+        localStorage.setItem("refreshToken", refreshRes.data.refreshToken);
+
+        // Retry PUT with the new token (Axios interceptor should handle Authorization header)
+        // We can call the original PUT again, relying on the 'api' interceptor to use the new token
+        await api.put("/lesson/update", requestBody); 
+
+        alert("Lesson updated successfully after token refresh!");
+        router.push("/lessons");
+      } catch (refreshErr) {
+        console.error("Refresh token failed:", refreshErr);
+        alert("Failed to refresh token. Please login again.");
+      }
+    } else {
+      console.error("Error updating lesson:", err.response?.data || err);
+      alert(`Failed to save lesson: ${err.response?.data?.title || err.message}`);
+    }
+  }
+};
+  
 
   return (
     <div className="space-y-6">
@@ -61,10 +130,11 @@ export function LessonEditor({ initialData }: LessonEditorProps) {
             <Share2 className="w-4 h-4 mr-2" />
             Share
           </Button>
-          <Button>
+          <Button onClick={handleSave}>
             <Save className="w-4 h-4 mr-2" />
-            Save
+            {lessonId ? "Save Changes" : "Create Lesson"}
           </Button>
+
         </div>
       </div>
 
