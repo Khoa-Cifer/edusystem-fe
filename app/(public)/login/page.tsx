@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { BookOpen } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useState } from "react";
-import { showNotification } from "@/components/notification-helper";
 import { useRouter } from "next/navigation";
+import { useSonner } from "@/hooks/use-sonner";
 import { jwtDecode } from "jwt-decode";
 
 export default function LoginPage() {
@@ -18,24 +18,31 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { showToast } = useSonner();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      showNotification.warning(
-        "Email or password not found",
-        "Please input email and password"
-      );
+      showToast("warning", {
+        title: "Email or password not found",
+        description: "Please input email and password",
+      });
       return;
     }
     setIsSubmitting(true);
     try {
       const response = await login(email, password);
       if (response.isSuccess) {
-        const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+        const token =
+          typeof window !== "undefined"
+            ? localStorage.getItem("accessToken")
+            : null;
         if (token) {
           try {
             const decoded = jwtDecode<any>(token);
-            const roleClaim = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+            const roleClaim =
+              decoded[
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+              ];
             const role = Array.isArray(roleClaim) ? roleClaim[0] : roleClaim;
 
             if (role === "ADMIN") {
@@ -50,8 +57,7 @@ export default function LoginPage() {
               router.push("/");
               return;
             }
-          } catch {
-          }
+          } catch {}
         }
         router.push("/");
       }

@@ -2,8 +2,10 @@ import { ResponseDto } from "@/interfaces/response-dto";
 import { FetchParams, UserRegistrationFormData } from "@/interfaces/user";
 import api from "./http";
 import { convertDateString } from "@/lib/utils";
-import { showNotification } from "@/components/notification-helper";
 import { TeacherResponse } from "@/interfaces/teacher";
+import { useSonner } from "@/hooks/use-sonner";
+
+const { showToast } = useSonner();
 
 export class TeacherApi {
   static async getTeachers(
@@ -46,7 +48,10 @@ export class TeacherApi {
       console.error("Create account failed:", error);
       const e: any = error;
       const message = e.response.data.message || "Please try again";
-      showNotification.error("Create Account Failed", message);
+      showToast("error", {
+        title: "Create Account Failed",
+        description: message,
+      });
       throw error;
     }
   }

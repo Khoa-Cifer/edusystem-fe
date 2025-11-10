@@ -3,7 +3,9 @@ import { StudentResponse } from "@/interfaces/student";
 import api from "./http";
 import { FetchParams, UserRegistrationFormData } from "@/interfaces/user";
 import { convertDateString } from "@/lib/utils";
-import { showNotification } from "@/components/notification-helper";
+import { useSonner } from "@/hooks/use-sonner";
+
+const { showToast } = useSonner();
 
 export class StudentApi {
   static async getStudents(
@@ -27,7 +29,9 @@ export class StudentApi {
     return response.data;
   }
 
-  static async studentRegister(data: UserRegistrationFormData): Promise<ResponseDto<any>> {
+  static async studentRegister(
+    data: UserRegistrationFormData
+  ): Promise<ResponseDto<any>> {
     try {
       const response = await api.post("/auth/students-register", {
         email: data.email,
@@ -44,7 +48,10 @@ export class StudentApi {
       console.error("Register failed:", error);
       const e: any = error;
       const message = e.response.data.message || "Please try again";
-      showNotification.error("Registration Failed", message);
+      showToast("error", {
+        title: "Registration Failed",
+        description: message,
+      });
       throw error;
     }
   }
