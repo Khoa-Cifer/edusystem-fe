@@ -148,7 +148,7 @@ export default function LessonsPage() {
               <Card
                 key={lesson.lessonId}
                 className="p-6 bg-card border-border hover:border-primary/50 transition-all cursor-pointer group"
-                onClick={() => router.push(`/lessons/${lesson.lessonId}`)} // click card navigate
+                onClick={() => router.push(`/lessons/${lesson.lessonId}`)} 
               >
                 <div>
                   {/* Top Row */}

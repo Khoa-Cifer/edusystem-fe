@@ -15,7 +15,7 @@ export function TeachersList() {
   const [searchTerm, setSearchTerm] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const pageSize = 10
+  const pageSize = 100
 
   useEffect(() => {
     const loadTeachers = async () => {

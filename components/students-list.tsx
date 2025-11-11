@@ -12,11 +12,11 @@ export function StudentsList() {
   const [students, setStudents] = useState<Student[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(100);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const loadStudents = async () => {
     try {
       setLoading(true);
@@ -96,17 +96,19 @@ export function StudentsList() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h3 className="font-semibold text-card-foreground">
-                        {student.applicationUser.fullName}
+                        {student.applicationUser?.fullName || "N/A"}
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        {student.applicationUser.email}
+                        {student.applicationUser?.email || "N/A"}
                       </p>
                       <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-                        <span>ID: {student.studentId}</span>
+                        <span>ID: {student.studentId || "Not Found"}</span>
                         <span>
-                          Phone: {student.applicationUser.phoneNumber}
+                          Phone: {student.applicationUser?.phoneNumber || "N/A"}
                         </span>
-                        <span>Status: {student.applicationUser.status}</span>
+                        <span>
+                          Status: {student.applicationUser?.status || "N/A"}
+                        </span>
                       </div>
                     </div>
                     <div className="flex gap-2">

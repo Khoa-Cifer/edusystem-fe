@@ -3,7 +3,7 @@
 import type React from "react";
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -16,6 +16,7 @@ import {
   Book,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/auth-context";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -23,7 +24,14 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const router = useRouter();
+  const { logout } = useAuth();
   const pathname = usePathname();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
+  };
 
   const adminNav = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -113,6 +121,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               variant="outline"
               size="sm"
               className="w-full justify-start bg-transparent"
+              onClick={handleLogout}
             >
               <LogOut className="w-4 h-4 mr-2" />
               Logout

@@ -102,6 +102,7 @@ export function AddUserDialog({ onUserAdded }: AddUserDialogProps) {
             <Label>User Type</Label>
             <Select
               value={userType}
+              defaultValue="teacher"
               onValueChange={(value: "student" | "teacher") =>
                 setUserType(value)
               }
