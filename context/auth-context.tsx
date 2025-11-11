@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     password: string
   ): Promise<ResponseDto<any>> => {
     try {
-      const response = await api.post("/auth/sign-in", {
+      const response = await api.post("/authentication/sign-in", {
         email: email,
         password: password,
       });

@@ -1,6 +1,5 @@
 "use client";
 
-import { TeacherLayout } from "@/components/teacher-layout";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";

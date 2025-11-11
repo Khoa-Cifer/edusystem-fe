@@ -42,7 +42,7 @@ export class LessonApi {
       filterQuery: filterQuery,
       sortBy,
     });
-    const response = await api.get(`/lessoncontent/get/all?${queryParams}`);
+    const response = await api.get(`/lesson-contents?${queryParams}`);
     return response.data;
   }
 }

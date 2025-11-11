@@ -1,12 +1,12 @@
 import { ResponseDto } from "@/interfaces/response-dto";
 import { FetchParams } from "@/interfaces/user";
 import api from "./http";
-import { MatrixResponse } from "@/interfaces/matrix";
+import { QuestionResponse } from "@/interfaces/question";
 
-export class MatrixApi {
-  static async getMatrices(
+export class QuestionApi {
+  static async getQuestions(
     params: FetchParams = {}
-  ): Promise<ResponseDto<MatrixResponse>> {
+  ): Promise<ResponseDto<QuestionResponse>> {
     const {
       pageNumber = 1,
       pageSize = 10,
@@ -23,7 +23,7 @@ export class MatrixApi {
       sortBy,
     });
 
-    const response = await api.get(`/matrices?${queryParams}`);
+    const response = await api.get(`/questions?${queryParams}`);
     return response.data;
   }
 }
