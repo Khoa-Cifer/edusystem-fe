@@ -26,4 +26,48 @@ export class QuestionApi {
     const response = await api.get(`/questions?${queryParams}`);
     return response.data;
   }
+
+  // Get single question by ID
+  static async getQuestionById(questionId: string): Promise<ResponseDto<any>> {
+    const response = await api.get(`/questions/${questionId}`);
+    return response.data;
+  }
+
+  // Create new question
+  static async createQuestion(questionData: {
+    title: string;
+    content: string;
+    questionType: string;
+    level: string;
+    skillType: string;
+    englishLevel: string;
+    score: number;
+  }): Promise<ResponseDto<any>> {
+    const response = await api.post("/questions", questionData);
+    return response.data;
+  }
+
+  // Update existing question
+  static async updateQuestion(
+    questionId: string,
+    questionData: {
+      questionId: string;
+      title: string;
+      content: string;
+      questionType: string;
+      level: string;
+      skillType: string;
+      englishLevel: string;
+      score: number;
+    }
+  ): Promise<ResponseDto<any>> {
+    const response = await api.put(`/questions/${questionId}`, questionData);
+    return response.data;
+  }
+
+  // Delete question
+  static async deleteQuestion(questionId: string): Promise<ResponseDto<any>> {
+    const response = await api.delete(`/questions/${questionId}`);
+    return response.data;
+  }
 }

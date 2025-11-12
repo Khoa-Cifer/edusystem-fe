@@ -15,8 +15,15 @@ import {
   Bell,
   Menu,
   X,
-  Home,
-  Share2,
+  LayoutDashboard,
+  GraduationCap,
+  HelpCircle,
+  ClipboardList,
+  TrendingUp,
+  UserCog,
+  FolderKanban,
+  Grid3x3,
+  BookMarked,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -38,14 +45,15 @@ export function TeacherLayout({ children }: TeacherLayoutProps) {
   };
 
   const teacherNav = [
-    { name: "Dashboard", href: "/teacher-dashboard", icon: Home },
+    { name: "Dashboard", href: "/teacher-dashboard", icon: LayoutDashboard },
     { name: "Lessons", href: "/lessons", icon: BookOpen },
-    { name: "Question Bank", href: "/questions", icon: FileQuestion },
-    { name: "Quizzes", href: "/quizzes", icon: Brain },
-    { name: "Analytics", href: "/analytics", icon: BarChart3 },
-    { name: "Students", href: "/students", icon: Users },
-    { name: "Shared", href: "/shared", icon: Share2 },
-    { name: "Matrix", href: "/matrix", icon: Share2 },
+    { name: "Question Bank", href: "/questions", icon: HelpCircle },
+    { name: "Quizzes", href: "/quizzes", icon: ClipboardList },
+    { name: "Analytics", href: "/analytics", icon: TrendingUp },
+    { name: "Students", href: "/students", icon: GraduationCap },
+    { name: "Shared", href: "/shared", icon: FolderKanban },
+    { name: "Matrix", href: "/matrix", icon: Grid3x3 },
+    { name: "Units", href: "/units", icon: BookMarked },
   ];
 
   return (
@@ -90,9 +98,9 @@ export function TeacherLayout({ children }: TeacherLayoutProps) {
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {teacherNav.map((item) => {
-              const isActive = pathname.includes(
-                item.href.replace("/(teacher)", "")
-              );
+              const isActive =
+                pathname === item.href ||
+                pathname.startsWith(item.href + "/");
               return (
                 <Link
                   key={item.name}

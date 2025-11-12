@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ChevronLeft, Edit, Trash, Plus, ExternalLink, Eye } from "lucide-react"
+import { ChevronLeft, Edit, Eye, Trash, Plus, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { LessonApi } from "@/axios/lesson"
@@ -44,11 +44,6 @@ export default function ViewLessonPage() {
       setLoading(true)
       
       const data = await LessonApi.getLessonById(lessonId)
-
-      console.log("===== LESSON API RESPONSE =====")
-      console.log("Full response:", data)
-      console.log("Lesson result:", data.result)
-      console.log("================================")
 
       if (data.isSuccess && data.result) {
         setLesson(data.result)
@@ -151,12 +146,12 @@ export default function ViewLessonPage() {
           <div>
             <h1 className="text-2xl font-bold">Lesson Details</h1>
             <p className="text-sm text-muted-foreground">
-              View lesson information and contents
+              View lesson information
             </p>
           </div>
         </div>
         <Button asChild>
-          <Link href={`/lessons/${lessonId}/edit`}>
+          <Link href={`/lessons/${lessonId}`}>
             <Edit className="w-4 h-4 mr-2" />
             Edit Lesson
           </Link>
@@ -171,9 +166,7 @@ export default function ViewLessonPage() {
               <h3 className="text-sm font-medium text-muted-foreground mb-2">
                 Lesson Name
               </h3>
-              <p className="text-lg font-semibold">
-                {lesson.name || lesson.title || lesson.lessonName || "Untitled Lesson"}
-              </p>
+              <p className="text-lg font-semibold">{lesson.name || lesson.title}</p>
             </div>
 
             <div>
@@ -181,53 +174,24 @@ export default function ViewLessonPage() {
                 Lesson ID
               </h3>
               <p className="text-sm font-mono text-muted-foreground">
-                {lesson.lessonId || lesson.id}
+                {lesson.lessonId}
               </p>
             </div>
 
-            {lesson.status && (
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                  Status
-                </h3>
-                {lesson.status === "1" || lesson.status === 1 || lesson.status === true ? (
-                  <Badge className="bg-accent/20 text-accent border-accent/30">
-                    Active
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="text-muted-foreground">
-                    Inactive
-                  </Badge>
-                )}
-              </div>
-            )}
-
-            {lesson.duration && (
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                  Duration
-                </h3>
-                <p className="text-sm">{lesson.duration} minutes</p>
-              </div>
-            )}
-
-            {lesson.level && (
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                  Level
-                </h3>
-                <Badge variant="outline">{lesson.level}</Badge>
-              </div>
-            )}
-
-            {lesson.category && (
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                  Category
-                </h3>
-                <p className="text-sm">{lesson.category}</p>
-              </div>
-            )}
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                Status
+              </h3>
+              {lesson.status === "1" ? (
+                <Badge className="bg-accent/20 text-accent border-accent/30">
+                  Active
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="text-muted-foreground">
+                  Inactive
+                </Badge>
+              )}
+            </div>
           </div>
 
           {lesson.description && (
@@ -246,29 +210,25 @@ export default function ViewLessonPage() {
               Metadata
             </h3>
             <div className="grid md:grid-cols-2 gap-4 text-sm">
-              {lesson.createdBy && (
-                <div>
-                  <span className="text-muted-foreground">Created by: </span>
-                  <span className="font-medium">{lesson.createdBy}</span>
-                </div>
-              )}
-              {lesson.createdTime && (
-                <div>
-                  <span className="text-muted-foreground">Created at: </span>
-                  <span>{new Date(lesson.createdTime).toLocaleString()}</span>
-                </div>
-              )}
+              <div>
+                <span className="text-muted-foreground">Created by: </span>
+                <span className="font-medium">{lesson.createdBy}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Created at: </span>
+                <span>{new Date(lesson.createdTime).toLocaleString()}</span>
+              </div>
               {lesson.updatedBy && (
-                <div>
-                  <span className="text-muted-foreground">Updated by: </span>
-                  <span className="font-medium">{lesson.updatedBy}</span>
-                </div>
-              )}
-              {lesson.updatedTime && (
-                <div>
-                  <span className="text-muted-foreground">Updated at: </span>
-                  <span>{new Date(lesson.updatedTime).toLocaleString()}</span>
-                </div>
+                <>
+                  <div>
+                    <span className="text-muted-foreground">Updated by: </span>
+                    <span className="font-medium">{lesson.updatedBy}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Updated at: </span>
+                    <span>{new Date(lesson.updatedTime).toLocaleString()}</span>
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -340,19 +300,9 @@ export default function ViewLessonPage() {
                         {content.resourceUrl}
                       </a>
                     </div>
-
-                    <div className="mt-2 text-xs text-muted-foreground">
-                      Created by {content.createdBy} • {new Date(content.createdTime).toLocaleDateString()}
-                    </div>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href={`/lesson-content/${content.lessonContentId}/view`}>
-                        <Eye className="w-4 h-4 mr-1" />
-                        View
-                      </Link>
-                    </Button>
                     <Button variant="ghost" size="sm" asChild>
                       <Link href={`/lesson-content/${content.lessonContentId}`}>
                         <Edit className="w-4 h-4 mr-1" />

@@ -43,7 +43,7 @@ export function StudentLessonsList() {
       setIsLoading(true);
       setError(null);
       try {
-        const res = await api.get("/lesson/get/all", {
+        const res = await api.get("/lessons", {
           params: { pageNumber: 1, pageSize: 10 },
         });
         const data: ApiLesson[] = res.data.result?.data ?? [];

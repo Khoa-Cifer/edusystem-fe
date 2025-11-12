@@ -1,48 +1,56 @@
-import { LessonContentResponse, LessonResponse } from "@/interfaces/lesson";
 import { ResponseDto } from "@/interfaces/response-dto";
 import { FetchParams } from "@/interfaces/user";
 import api from "./http";
 
 export class LessonApi {
+  // Get all lessons with pagination
   static async getLessons(
     params: FetchParams = {}
-  ): Promise<ResponseDto<LessonResponse>> {
+  ): Promise<ResponseDto<any>> {
     const {
       pageNumber = 1,
       pageSize = 10,
       filterQuery = "",
+      filterOn = "",
       sortBy = "asc",
     } = params;
 
     const queryParams = new URLSearchParams({
       pageNumber: pageNumber.toString(),
       pageSize: pageSize.toString(),
-      filterOn: "",
+      filterOn: filterOn,
       filterQuery: filterQuery,
       sortBy,
     });
-    const response = await api.get(`/lesson/get/all?${queryParams}`);
+
+    const response = await api.get(`/lessons?${queryParams}`);
     return response.data;
   }
 
-  static async getLessonContents(
-    params: FetchParams = {}
-  ): Promise<ResponseDto<LessonContentResponse>> {
-    const {
-      pageNumber = 1,
-      pageSize = 10,
-      filterQuery = "",
-      sortBy = "asc",
-    } = params;
+  // Get single lesson by ID
+  static async getLessonById(lessonId: string): Promise<ResponseDto<any>> {
+    const response = await api.get(`/lessons/${lessonId}`);
+    return response.data;
+  }
 
-    const queryParams = new URLSearchParams({
-      pageNumber: pageNumber.toString(),
-      pageSize: pageSize.toString(),
-      filterOn: "",
-      filterQuery: filterQuery,
-      sortBy,
-    });
-    const response = await api.get(`/lesson-contents?${queryParams}`);
+  // Create new lesson
+  static async createLesson(lessonData: any): Promise<ResponseDto<any>> {
+    const response = await api.post("/lessons", lessonData);
+    return response.data;
+  }
+
+  // Update existing lesson
+  static async updateLesson(
+    lessonId: string,
+    lessonData: any
+  ): Promise<ResponseDto<any>> {
+    const response = await api.put(`/lessons/${lessonId}`, lessonData);
+    return response.data;
+  }
+
+  // Delete lesson
+  static async deleteLesson(lessonId: string): Promise<ResponseDto<any>> {
+    const response = await api.delete(`/lessons/${lessonId}`);
     return response.data;
   }
 }

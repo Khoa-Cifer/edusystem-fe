@@ -58,10 +58,7 @@ export default function LessonsPage() {
       try {
         setLoading(true);
         setError("");
-
-        // NOTE: use the path that matches your axios baseURL.
-        // If your baseURL already contains "/api", change this to "/lesson/get/all".
-        const res = await api.get("/lesson/get/all", {
+        const res = await api.get("/lessons", {
           params: { pageNumber: 1, pageSize: 50 },
         });
 

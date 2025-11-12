@@ -6,10 +6,12 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, MoreVertical, Edit, Trash } from "lucide-react";
+import { Plus, Search, MoreVertical, Edit, Trash, Eye } from "lucide-react";
 import Link from "next/link";
 import { Question } from "@/interfaces/question";
 import { QuestionApi } from "@/axios/question";
+import { AnswerApi } from "@/axios/answer";
+import { toast } from "sonner";
 
 export default function QuestionsPage() {
   const searchParams = useSearchParams();
@@ -29,6 +31,8 @@ export default function QuestionsPage() {
     filterQuery: "",
     sortBy: "asc" as "asc" | "desc",
   });
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [questionAnswerStatus, setQuestionAnswerStatus] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetchQuestions();
@@ -61,12 +65,32 @@ export default function QuestionsPage() {
           hasPreviousPage: response.result.hasPreviousPage,
           hasNextPage: response.result.hasNextPage,
         });
+
+        // Fetch answer status for each question
+        fetchAnswerStatus(response.result.data);
       }
     } catch (error) {
       console.error("Failed to fetch questions:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchAnswerStatus = async (questions: Question[]) => {
+    const statusMap: Record<string, boolean> = {};
+    
+    await Promise.all(
+      questions.map(async (question) => {
+        try {
+          const data = await AnswerApi.getAnswersByQuestionId(question.questionId);
+          statusMap[question.questionId] = data.isSuccess && data.result && data.result.length > 0;
+        } catch (error) {
+          statusMap[question.questionId] = false;
+        }
+      })
+    );
+
+    setQuestionAnswerStatus(statusMap);
   };
 
   const handleFilterChange = (filterOn: string) => {
@@ -102,6 +126,34 @@ export default function QuestionsPage() {
     return "border-muted-foreground text-muted-foreground";
   };
 
+  const handleDeleteClick = async (questionId: string) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this question? This action cannot be undone."
+    );
+
+    if (!confirmed) return;
+
+    setIsDeleting(true);
+    try {
+      const data = await QuestionApi.deleteQuestion(questionId);
+
+      if (data.isSuccess) {
+        toast.success(data.message || "Question deleted successfully");
+        fetchQuestions(); // Refresh the list
+      } else {
+        toast.error(data.message || "Failed to delete question");
+      }
+    } catch (error: any) {
+      console.error("Error deleting question:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "An error occurred while deleting the question"
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -113,7 +165,7 @@ export default function QuestionsPage() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/(teacher)/questions/new">
+          <Link href="/questions/new">
             <Plus className="w-4 h-4 mr-2" />
             Add Question
           </Link>
@@ -182,6 +234,18 @@ export default function QuestionsPage() {
                     <Badge variant="outline" className="text-xs">
                       {question.englishLevel}
                     </Badge>
+                    {/* Answer Status Badge */}
+                    {questionAnswerStatus[question.questionId] !== undefined && (
+                      questionAnswerStatus[question.questionId] ? (
+                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                          Answered
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-orange-400 border-orange-500/30">
+                          Not Answered Yet
+                        </Badge>
+                      )
+                    )}
                   </div>
 
                   <p className="font-medium mb-2 line-clamp-2">
@@ -200,10 +264,22 @@ export default function QuestionsPage() {
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon">
-                    <Edit className="w-4 h-4" />
+                  <Button variant="ghost" size="icon" asChild>
+                    <Link href={`/questions/${question.questionId}/view`}>
+                      <Eye className="w-4 h-4" />
+                    </Link>
                   </Button>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" asChild>
+                    <Link href={`/questions/${question.questionId}`}>
+                      <Edit className="w-4 h-4" />
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDeleteClick(question.questionId)}
+                    disabled={isDeleting}
+                  >
                     <Trash className="w-4 h-4 text-destructive" />
                   </Button>
                   <Button variant="ghost" size="icon">

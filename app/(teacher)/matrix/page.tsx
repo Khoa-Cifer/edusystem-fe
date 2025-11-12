@@ -19,7 +19,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
-import { Filter, Plus } from "lucide-react";
+import { Filter, Plus, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -383,9 +383,19 @@ export default function MatrixPage() {
                         {matrix.createdTime}
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link href={`/matrix/${matrix.matrixId}`}>Edit</Link>
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/matrix/${matrix.matrixId}/view`}>
+                              <Eye className="w-4 h-4 mr-1" />
+                              View
+                            </Link>
+                          </Button>
+                          <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/matrix/${matrix.matrixId}`}>
+                              Edit
+                            </Link>
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}
