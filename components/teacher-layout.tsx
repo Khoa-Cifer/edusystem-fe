@@ -145,32 +145,7 @@ export function TeacherLayout({ children }: TeacherLayoutProps) {
         </div>
       </aside>
 
-      {/* Main Content */}
       <div className="lg:pl-64">
-        {/* Top Bar */}
-        <header className="sticky top-0 z-30 bg-card/50 backdrop-blur-sm border-b border-border">
-          <div className="flex items-center justify-between px-4 py-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Menu className="w-5 h-5" />
-            </Button>
-
-            <div className="flex-1" />
-
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
-              </Button>
-            </div>
-          </div>
-        </header>
-
-        {/* Page Content */}
         <main className="p-6">{children}</main>
       </div>
     </div>
