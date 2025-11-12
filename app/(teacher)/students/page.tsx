@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card } from "@/components/ui/card";
 import {
@@ -18,10 +19,52 @@ import {
   Target,
   TrendingUp,
   TrendingDown,
+  Loader2,
 } from "lucide-react";
 import { StudentPerformanceTable } from "@/components/student-performance-table";
+import { StudentApi } from "@/axios/student";
+import { StudentResponse } from "@/interfaces/student";
+import { FetchParams } from "@/interfaces/user";
 
 export default function StudentsPage() {
+  const [studentsData, setStudentsData] = useState<StudentResponse | null>(
+    null
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<FetchParams>({
+    pageNumber: 1,
+    pageSize: 10,
+  });
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await StudentApi.getStudents(filters);
+        if (response.isSuccess && response.result) {
+          setStudentsData(response.result);
+        } else {
+          setError(response.message || "Failed to fetch students");
+        }
+      } catch (err) {
+        setError("An error occurred while fetching students");
+        console.error("Error fetching students:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, [filters]);
+
+  const totalStudents = studentsData?.totalCount || 0;
+  const activeStudents =
+    studentsData?.data?.filter((s) => s.status === 1).length || 0;
+  const inactiveStudents =
+    studentsData?.data?.filter((s) => s.status === 0).length || 0;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -66,54 +109,80 @@ export default function StudentsPage() {
               <Users className="w-5 h-5 text-primary" />
             </div>
           </div>
-          <div className="text-3xl font-bold mb-1">268</div>
+          <div className="text-3xl font-bold mb-1">
+            {loading ? (
+              <Loader2 className="w-8 h-8 animate-spin" />
+            ) : (
+              totalStudents
+            )}
+          </div>
           <div className="flex items-center gap-1 text-sm text-accent">
             <TrendingUp className="w-4 h-4" />
-            <span>+4% from last month</span>
+            <span>Active: {activeStudents}</span>
           </div>
         </Card>
 
         <Card className="p-6 bg-card border-border">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm text-muted-foreground">
-              Top Performers
+              Active Students
             </span>
             <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center">
               <Award className="w-5 h-5 text-secondary" />
             </div>
           </div>
-          <div className="text-3xl font-bold mb-1">42</div>
+          <div className="text-3xl font-bold mb-1">
+            {loading ? (
+              <Loader2 className="w-8 h-8 animate-spin" />
+            ) : (
+              activeStudents
+            )}
+          </div>
           <div className="flex items-center gap-1 text-sm text-accent">
             <TrendingUp className="w-4 h-4" />
-            <span>+2 from last month</span>
+            <span>Currently enrolled</span>
           </div>
         </Card>
 
         <Card className="p-6 bg-card border-border">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-muted-foreground">At Risk</span>
+            <span className="text-sm text-muted-foreground">Inactive</span>
             <div className="w-10 h-10 bg-destructive/10 rounded-lg flex items-center justify-center">
               <AlertCircle className="w-5 h-5 text-destructive" />
             </div>
           </div>
-          <div className="text-3xl font-bold mb-1">12</div>
+          <div className="text-3xl font-bold mb-1">
+            {loading ? (
+              <Loader2 className="w-8 h-8 animate-spin" />
+            ) : (
+              inactiveStudents
+            )}
+          </div>
           <div className="flex items-center gap-1 text-sm text-destructive">
             <TrendingDown className="w-4 h-4" />
-            <span>Below 60% average</span>
+            <span>Not active</span>
           </div>
         </Card>
 
         <Card className="p-6 bg-card border-border">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-muted-foreground">Average Score</span>
+            <span className="text-sm text-muted-foreground">Current Page</span>
             <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
               <Target className="w-5 h-5 text-accent" />
             </div>
           </div>
-          <div className="text-3xl font-bold mb-1">84.5%</div>
+          <div className="text-3xl font-bold mb-1">
+            {loading ? (
+              <Loader2 className="w-8 h-8 animate-spin" />
+            ) : (
+              `${studentsData?.currentPage || 0}/${studentsData?.totalPages || 0}`
+            )}
+          </div>
           <div className="flex items-center gap-1 text-sm text-accent">
             <TrendingUp className="w-4 h-4" />
-            <span>+3.2% from last month</span>
+            <span>
+              Showing {studentsData?.data?.length || 0} of {totalStudents}
+            </span>
           </div>
         </Card>
       </div>
@@ -128,7 +197,17 @@ export default function StudentsPage() {
         <TabsContent value="list">
           <Card className="p-6 bg-card border-border">
             <h3 className="text-lg font-semibold mb-6">All Students</h3>
-            <StudentPerformanceTable />
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : error ? (
+              <div className="text-center py-12 text-destructive">{error}</div>
+            ) : (
+              <StudentPerformanceTable
+                students={studentsData?.data || []}
+              />
+            )}
           </Card>
         </TabsContent>
 
@@ -137,43 +216,45 @@ export default function StudentsPage() {
             <h3 className="text-lg font-semibold mb-6">
               Top Performing Students
             </h3>
-            {[
-              {
-                name: "Nguyen Van A",
-                score: 98,
-                status: "Excellent",
-              },
-              {
-                name: "Tran Thi B",
-                score: 95,
-                status: "Excellent",
-              },
-              {
-                name: "Le Van C",
-                score: 88,
-                status: "Good",
-              },
-            ].map((student, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between p-4 bg-muted/50 rounded-lg mb-2 hover:bg-muted transition-colors"
-              >
-                <span className="font-medium">{student.name}</span>
-                <div className="flex items-center gap-3">
-                  <span>{student.score}%</span>
-                  <Badge
-                    variant="outline"
-                    className={
-                      student.score >= 90
-                        ? "text-accent border-accent"
-                        : "text-secondary border-secondary"
-                    }
-                  >
-                    {student.status}
-                  </Badge>
-                </div>
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
-            ))}
+            ) : error ? (
+              <div className="text-center py-12 text-destructive">{error}</div>
+            ) : studentsData?.data && studentsData.data.length > 0 ? (
+              studentsData.data.slice(0, 10).map((student) => (
+                <div
+                  key={student.studentId}
+                  className="flex items-center justify-between p-4 bg-muted/50 rounded-lg mb-2 hover:bg-muted transition-colors"
+                >
+                  <div className="flex flex-col">
+                    <span className="font-medium">
+                      {student.applicationUser?.fullName || "N/A"}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {student.studentCode} • {student.class || "No Class"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge
+                      variant="outline"
+                      className={
+                        student.status === 1
+                          ? "text-accent border-accent"
+                          : "text-secondary border-secondary"
+                      }
+                    >
+                      {student.status === 1 ? "Active" : "Inactive"}
+                    </Badge>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-12 text-muted-foreground">
+                No students found
+              </div>
+            )}
           </Card>
         </TabsContent>
       </Tabs>

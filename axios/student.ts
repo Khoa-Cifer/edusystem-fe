@@ -22,7 +22,7 @@ export class StudentApi {
       filterQuery: filterQuery,
       sortBy,
     });
-    const response = await api.get(`/student?${queryParams}`);
+    const response = await api.get(`/students?${queryParams}`);
     return response.data;
   }
 
