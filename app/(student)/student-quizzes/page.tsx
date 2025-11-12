@@ -1,19 +1,25 @@
 import type { Metadata } from "next";
-// import { StudentQuizzesList } from "@/components/student-quizzes-list";
-// Note: Temporarily hard-fix the quizzes page and avoid API calls.
-// To enable again, use StudentQuizzesList as before.
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import TakeQuiz from "@/components/quiz/TakeQuiz";
+import QuizScoreBadge from "@/components/quiz/QuizScoreBadge";
+import TakeQuizButton from "@/components/quiz/TakeQuizButton";
+import QuizDynamicStatus from "@/components/quiz/QuizDynamicStatus";
+import QuizActions from "@/components/quiz/QuizActions";
 
 export const metadata: Metadata = {
   title: "Student Quizzes",
   description: "Practice and take quizzes published by teachers",
 };
 
-export default function StudentQuizzesPage({ searchParams }: { searchParams?: { id?: string } }) {
+export default async function StudentQuizzesPage({ searchParams }: { searchParams?: Promise<{ id?: string }> }) {
+  const sp = await searchParams;
+  if (sp?.id) {
+    return <TakeQuiz quizId={sp.id} />;
+  }
+
   const staticQuizzes = [
     {
       id: "quiz-001",
@@ -45,9 +51,6 @@ export default function StudentQuizzesPage({ searchParams }: { searchParams?: { 
       grade: 92,
     },
   ];
-  if (searchParams?.id) {
-    return <TakeQuiz quizId={searchParams.id} />;
-  }
 
   return (
     <div className="container mx-auto py-8">
@@ -66,9 +69,7 @@ export default function StudentQuizzesPage({ searchParams }: { searchParams?: { 
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl">{quiz.title}</CardTitle>
-                <Badge variant={quiz.status === "Open" ? "default" : "secondary"}>
-                  {quiz.status}
-                </Badge>
+                <QuizDynamicStatus quizId={quiz.id} baseStatus={quiz.status} />
               </div>
             </CardHeader>
             <CardContent>
@@ -77,15 +78,13 @@ export default function StudentQuizzesPage({ searchParams }: { searchParams?: { 
                 <span>Questions: {quiz.questionsCount}</span>
                 <span>Duration: {quiz.durationMinutes} minutes</span>
                 <span className="col-span-2">Updated: {quiz.updatedAt}</span>
-                {quiz.grade !== undefined && (
-                  <span className="col-span-2">Grade: {quiz.grade}%</span>
-                )}
+                <span className="col-span-2">
+                  <QuizScoreBadge quizId={quiz.id} />
+                </span>
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button asChild disabled={quiz.status !== "Open"}>
-                <Link href={`/student-quizzes?id=${quiz.id}`}>Take quiz</Link>
-              </Button>
+              <QuizActions quizId={quiz.id} isOpen={quiz.status === "Open"} />
             </CardFooter>
           </Card>
         ))}
