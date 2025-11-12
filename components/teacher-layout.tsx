@@ -45,13 +45,10 @@ export function TeacherLayout({ children }: TeacherLayoutProps) {
   };
 
   const teacherNav = [
-    { name: "Dashboard", href: "/teacher-dashboard", icon: LayoutDashboard },
     { name: "Lessons", href: "/lessons", icon: BookOpen },
     { name: "Question Bank", href: "/questions", icon: HelpCircle },
     { name: "Quizzes", href: "/quizzes", icon: ClipboardList },
-    { name: "Analytics", href: "/analytics", icon: TrendingUp },
     { name: "Students", href: "/students", icon: GraduationCap },
-    { name: "Shared", href: "/shared", icon: FolderKanban },
     { name: "Matrix", href: "/matrix", icon: Grid3x3 },
     { name: "Units", href: "/units", icon: BookMarked },
   ];
