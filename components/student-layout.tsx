@@ -16,6 +16,7 @@ import {
   X,
   Home,
   LogOut,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,7 @@ export function StudentLayout({ children }: StudentLayoutProps) {
 
   const studentNav = [
     { name: "Dashboard", href: "/student-dashboard", icon: Home },
+    // { name: "Profile", href: "/profile", icon: User },
     // { name: "My Courses", href: "/(student)/courses", icon: BookOpen },
     { name: "Lessons", href: "/student-lessons", icon: BookOpen },
     { name: "Quizzes", href: "/student-quizzes", icon: Brain },
@@ -112,7 +114,11 @@ export function StudentLayout({ children }: StudentLayoutProps) {
 
           {/* User Profile */}
           <div className="p-4 border-t border-border space-y-3">
-            <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors cursor-pointer">
+            <Link
+              href="/profile"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors cursor-pointer"
+              onClick={() => setSidebarOpen(false)}
+            >
               <Avatar>
                 <AvatarFallback className="bg-primary text-primary-foreground">
                   {initials}
@@ -122,7 +128,7 @@ export function StudentLayout({ children }: StudentLayoutProps) {
                 <div className="text-sm font-medium truncate">{displayName}</div>
                 <div className="text-xs text-muted-foreground">Student</div>
               </div>
-            </div>
+            </Link>
             <Button
               variant="destructive"
               size="sm"
