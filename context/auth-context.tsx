@@ -101,7 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     email: string
   ): Promise<ResponseDto<any>> => {
     try {
-      const response = await api.post("/auth/email/verification/send", {
+      const response = await api.post("/authentication/email/verification/send", {
         email: email,
       });
       showToast("success", {
@@ -126,7 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     token: string
   ): Promise<ResponseDto<any>> => {
     try {
-      const response = await api.post("/auth/email/verification/confirm", {
+      const response = await api.post("/authentication/email/verification/confirm", {
         userId: userId,
         token: token,
       });
