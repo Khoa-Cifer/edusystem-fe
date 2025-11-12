@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BookOpen, Brain, BarChart3, Users, Zap, Shield, ListChecks, LayoutDashboard } from "lucide-react";
+import { BookOpen, Brain, BarChart3, Users, Zap, Shield, ListChecks, LayoutDashboard, User } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -87,9 +87,23 @@ export default function HomePage() {
                   <div className="absolute right-0 mt-2 w-56 rounded-md border border-border bg-card shadow-lg z-50 overflow-hidden">
                     <div className="px-4 py-3 border-b border-border bg-muted/30">
                       <p className="text-xs text-muted-foreground">Signed in as</p>
-                      <p className="text-sm font-semibold truncate">{displayName}</p>
+                      <Link
+                        href="/profile"
+                        className="text-sm font-semibold truncate hover:underline"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {displayName}
+                      </Link>
                     </div>
                     <div className="py-1">
+                      <Link
+                        href="/profile"
+                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <User className="h-4 w-4" />
+                        <span>Profile</span>
+                      </Link>
                       <Link
                         href="/student-lessons"
                         className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors"
