@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import api from "@/axios/http"; // chắc chắn đã có baseURL = backend
+import { LessonApi } from "@/axios/lesson";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -63,14 +63,18 @@ export default function LessonsPage() {
       try {
         setLoading(true);
         setError("");
-        const res = await api.get("/lessons", {
-          params: { pageNumber: 1, pageSize: 50 },
+        const response = await LessonApi.getLessons({
+          pageNumber: 1,
+          pageSize: 50,
         });
 
-        const data: Lesson[] = res.data?.result?.data || [];
-
-        setLessons(data);
-        setFilteredLessons(data);
+        if (response.isSuccess && response.result) {
+          const data: Lesson[] = response.result.data || [];
+          setLessons(data);
+          setFilteredLessons(data);
+        } else {
+          setError(response.message || "Failed to fetch lessons");
+        }
       } catch (err: any) {
         console.error(
           "Failed to fetch lessons",
@@ -227,35 +231,6 @@ export default function LessonsPage() {
           ))}
         </div>
       )}
-
-      {/* Templates Section */}
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Lesson Templates</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {templates.map((template) => (
-            <Card
-              key={template}
-              className="p-6 bg-card border-border border-dashed hover:border-primary hover:bg-primary/5 transition-all cursor-pointer"
-            >
-              <Link
-                href={`/(teacher)/lessons/new?template=${encodeURIComponent(
-                  template
-                )}`}
-                className="text-center block"
-                aria-label={`Create lesson from ${template} template`}
-              >
-                <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <BookOpen className="w-6 h-6 text-muted-foreground" />
-                </div>
-                <h3 className="font-medium mb-1">{template}</h3>
-                <p className="text-xs text-muted-foreground">
-                  Use this template
-                </p>
-              </Link>
-            </Card>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

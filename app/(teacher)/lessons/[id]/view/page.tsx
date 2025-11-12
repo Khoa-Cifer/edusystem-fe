@@ -64,17 +64,13 @@ export default function ViewLessonPage() {
     try {
       setContentsLoading(true)
       
-      const data = await LessonContentApi.getLessonContents({
+      const data = await LessonContentApi.getLessonContentsByLessonId(lessonId, {
         pageNumber: 1,
         pageSize: 100,
       })
 
       if (data.isSuccess && data.result) {
-        // Filter contents by lessonId
-        const filteredContents = data.result.data.filter(
-          (content: LessonContent) => content.lessonId === lessonId
-        )
-        setLessonContents(filteredContents)
+        setLessonContents(data.result.data || [])
       }
     } catch (error: any) {
       console.error("Error fetching lesson contents:", error)

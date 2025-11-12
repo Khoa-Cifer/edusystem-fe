@@ -33,6 +33,29 @@ export class LessonContentApi {
     return response.data;
   }
 
+  // Get lesson contents by lessonId using filterOn
+  static async getLessonContentsByLessonId(
+    lessonId: string,
+    params: Omit<FetchParams, "filterOn" | "filterQuery"> = {}
+  ): Promise<ResponseDto<any>> {
+    const {
+      pageNumber = 1,
+      pageSize = 100,
+      sortBy = "asc",
+    } = params;
+
+    const queryParams = new URLSearchParams({
+      pageNumber: pageNumber.toString(),
+      pageSize: pageSize.toString(),
+      filterOn: "lessonId",
+      filterQuery: lessonId,
+      sortBy,
+    });
+
+    const response = await api.get(`/lesson-contents?${queryParams}`);
+    return response.data;
+  }
+
   // Create new lesson content
   static async createLessonContent(contentData: {
     lessonId: string;

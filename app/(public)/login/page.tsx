@@ -50,7 +50,7 @@ export default function LoginPage() {
               return;
             }
             if (role === "TEACHER") {
-              router.push("/teacher-dashboard");
+              router.push("/lessons");
               return;
             }
             if (role === "STUDENT") {
