@@ -19,7 +19,7 @@ export default function QuizHeader({
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center gap-3">
         <span className="text-lg font-semibold">Quiz</span>
-        <Badge variant="secondary">{quizId}</Badge>
+        {/* <Badge variant="secondary">{quizId}</Badge> */}
       </div>
       <div className="flex items-center gap-4 text-sm">
         <span>
