@@ -1,25 +1,31 @@
-import React from "react";
+"use client";
 
-type QuizHeaderProps = {
+import { Badge } from "@/components/ui/badge";
+
+export default function QuizHeader({
+  quizId,
+  page,
+  totalPages,
+  answeredCount,
+  totalQuestions,
+}: {
   quizId: string;
   page: number;
   totalPages: number;
   answeredCount: number;
   totalQuestions: number;
-};
-
-export default function QuizHeader({ quizId, page, totalPages, answeredCount, totalQuestions }: QuizHeaderProps) {
+}) {
   return (
-    <div className="mb-6 flex items-center justify-between">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Take Quiz</h1>
-        <p>Quiz ID: {quizId}</p>
+    <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center gap-3">
+        <span className="text-lg font-semibold">Quiz</span>
+        <Badge variant="secondary">{quizId}</Badge>
       </div>
-      <div className="flex items-center gap-2">
-        <span className="inline-flex items-center rounded-md border border-primary bg-primary text-primary-foreground px-2 py-1 text-sm">
-          Page {page} of {totalPages}
+      <div className="flex items-center gap-4 text-sm">
+        <span>
+          Page {page}/{totalPages}
         </span>
-        <span className="inline-flex items-center rounded-md border border-primary bg-primary text-primary-foreground px-2 py-1 text-sm">
+        <span>
           Answered {answeredCount}/{totalQuestions}
         </span>
       </div>

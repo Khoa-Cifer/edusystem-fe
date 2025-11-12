@@ -30,7 +30,7 @@ export class StudentApi {
     data: UserRegistrationFormData
   ): Promise<ResponseDto<any>> {
     try {
-      const response = await api.post("/auth/authentication/students/register", {
+      const response = await api.post("/authentication/students/register", {
         email: data.email,
         password: data.password,
         confirmPassword: data.confirmPassword,

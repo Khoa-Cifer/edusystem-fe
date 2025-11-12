@@ -121,7 +121,7 @@ export default function TakeQuiz({ quizId }: { quizId: string }) {
             key={q.id}
             question={q}
             selected={answers[q.id]}
-            onSelect={(val) => handleSelect(q.id, val)}
+            onSelect={(val: string) => handleSelect(q.id, val)}
           />
         ))}
       </div>

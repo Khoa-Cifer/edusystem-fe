@@ -20,37 +20,24 @@ export default async function StudentQuizzesPage({ searchParams }: { searchParam
     return <TakeQuiz quizId={sp.id} />;
   }
 
-  const staticQuizzes = [
-    {
-      id: "quiz-001",
-      title: "JavaScript Basics",
-      description: "Test core JS: variables, functions, conditionals.",
-      questionsCount: 15,
-      durationMinutes: 20,
-      status: "Open",
-      updatedAt: "2025-11-12",
-      grade: 85,
-    },
-    {
-      id: "quiz-002",
-      title: "HTML & CSS Fundamentals",
-      description: "Review semantic HTML and CSS layouts: flexbox, grid.",
-      questionsCount: 20,
-      durationMinutes: 30,
-      status: "Upcoming",
-      updatedAt: "2025-11-10",
-    },
-    {
-      id: "quiz-003",
-      title: "React Essentials",
-      description: "Props, state, basic hooks, and list rendering.",
-      questionsCount: 12,
-      durationMinutes: 25,
-      status: "Open",
-      updatedAt: "2025-11-08",
-      grade: 92,
-    },
-  ];
+  let items: any[] = [];
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/quizzes?pageNumber=1&pageSize=10`, { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      items = data?.result?.data ?? [];
+    }
+  } catch {}
+
+  const quizzes = items.map((item: any, idx: number) => ({
+    id: String(item.quizId ?? item.id ?? idx),
+    title: String(item.quizName ?? item.title ?? "Untitled Quiz"),
+    description: String(item.description ?? ""),
+    questionsCount: Number(item.questionCount ?? 0),
+    durationMinutes: Number(item.duration ?? item.durationInMinutes ?? 0),
+    status: "Open",
+    updatedAt: typeof item.updatedAt === "string" ? item.updatedAt.slice(0, 10) : "",
+  }));
 
   return (
     <div className="container mx-auto py-8">
@@ -64,7 +51,7 @@ export default async function StudentQuizzesPage({ searchParams }: { searchParam
       {/* <StudentQuizzesList /> */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {staticQuizzes.map((quiz) => (
+        {(quizzes.length ? quizzes : []).map((quiz) => (
           <Card key={quiz.id} className="hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-center justify-between">
