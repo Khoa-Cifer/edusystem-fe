@@ -46,7 +46,7 @@ export default function LoginPage() {
             const role = Array.isArray(roleClaim) ? roleClaim[0] : roleClaim;
 
             if (role === "ADMIN") {
-              router.push("/admin");
+              router.push("/admin/users");
               return;
             }
             if (role === "TEACHER") {

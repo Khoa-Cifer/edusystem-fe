@@ -25,7 +25,7 @@ interface AdminLayoutProps {
 export function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, authenticatedUser } = useAuth();
   const pathname = usePathname();
 
   const handleLogout = async () => {
@@ -34,9 +34,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   const adminNav = [
-    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    // { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "User Management", href: "/admin/users", icon: Users },
-    { name: "Lesson Management", href: "/admin/lessons", icon: Book },
+    // { name: "Lesson Management", href: "/admin/lessons", icon: Book },
   ];
 
   return (
@@ -110,7 +110,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium truncate">
-                  Professor Smith
+                  {authenticatedUser?.fullName}
                 </div>
                 <div className="text-xs text-muted-foreground">
                   Administrator

@@ -111,26 +111,6 @@ export function StudentsList() {
                         </span>
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="gap-2 bg-transparent"
-                        onClick={() => handleEdit(student.studentId)}
-                      >
-                        <Edit2 className="w-4 h-4" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="gap-2"
-                        onClick={() => handleDelete(student.studentId)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        Delete
-                      </Button>
-                    </div>
                   </div>
                 </Card>
               ))

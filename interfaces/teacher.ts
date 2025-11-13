@@ -2,20 +2,15 @@ import { ApplicationUser } from "./user";
 
 export interface Teacher {
   teacherId: string;
-  userId: string;
-  applicationUser: ApplicationUser;
-  teacherCode: string;
+  teacherName: string;
+  teacherEmail: string;
+  teacherDOB: string;
+  gender: string;
+  address: string;
+  imageUrl: string;
   status: number;
-  department: string | null;
-  specialization: string | null;
-  position: string | null;
-  hireDate: string | null;
-  degree: string | null;
-  bio: string | null;
-  englishProficiency: string | null;
-  certifications: string | null;
-  teachingExperience: string | null;
-  officePhone: string | null;
+  teacherCode: string;
+  teachingExperience: string;
 }
 
 export interface TeacherResponse {

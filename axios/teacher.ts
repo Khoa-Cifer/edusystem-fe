@@ -22,7 +22,7 @@ export class TeacherApi {
       filterQuery: filterQuery,
       sortBy,
     });
-    const response = await api.get(`/teacher?${queryParams}`);
+    const response = await api.get(`/teachers?${queryParams}`);
     return response.data;
   }
 
