@@ -48,7 +48,7 @@ export function TeacherLayout({ children }: TeacherLayoutProps) {
     { name: "Lessons", href: "/lessons", icon: BookOpen },
     { name: "Question Bank", href: "/questions", icon: HelpCircle },
     { name: "Quizzes", href: "/quizzes", icon: ClipboardList },
-    { name: "Students", href: "/students", icon: GraduationCap },
+    // { name: "Students", href: "/students", icon: GraduationCap },
     { name: "Matrix", href: "/matrix", icon: Grid3x3 },
     { name: "Units", href: "/units", icon: BookMarked },
   ];

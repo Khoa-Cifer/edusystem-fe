@@ -7,7 +7,7 @@ import { AuthProvider } from "@/context/auth-context";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "v0 App",
+  title: "EduFlow",
   description: "Created with v0",
   generator: "v0.app",
 };
