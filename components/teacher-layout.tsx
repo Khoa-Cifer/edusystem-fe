@@ -37,8 +37,7 @@ export function TeacherLayout({ children }: TeacherLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuth();
-
+  const { logout, authenticatedUser } = useAuth();
   const handleLogout = async () => {
     await logout();
     router.push("/");
@@ -96,8 +95,7 @@ export function TeacherLayout({ children }: TeacherLayoutProps) {
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {teacherNav.map((item) => {
               const isActive =
-                pathname === item.href ||
-                pathname.startsWith(item.href + "/");
+                pathname === item.href || pathname.startsWith(item.href + "/");
               return (
                 <Link
                   key={item.name}
@@ -127,7 +125,7 @@ export function TeacherLayout({ children }: TeacherLayoutProps) {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium truncate">
-                  Professor Smith
+                  {authenticatedUser?.fullName}
                 </div>
                 <div className="text-xs text-muted-foreground">Teacher</div>
               </div>
@@ -137,7 +135,7 @@ export function TeacherLayout({ children }: TeacherLayoutProps) {
               size="sm"
               className="w-full justify-start bg-transparent"
               onClick={handleLogout}
-          >
+            >
               <LogOut className="w-4 h-4 mr-2" />
               Logout
             </Button>

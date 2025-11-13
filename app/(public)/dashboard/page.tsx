@@ -11,7 +11,7 @@ export default function DashboardPage() {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, Professor Smith</p>
+          <p className="text-muted-foreground">Welcome back</p>
         </div>
 
         {/* Quick Stats */}
